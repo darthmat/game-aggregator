@@ -8,7 +8,8 @@
     "develop": "tsx src/index.ts",
     "build": "tsc && tsc-alias",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix"
+    "lint:fix": "eslint src --fix",
+    "generate:rawg-api-client": "swagger-typescript-api generate --disable-throw-on-error --generate-union-enums -p https://api.rawg.io/docs/?format=openapi -o src/libs/rawg-api/generated"
   },
   "dependencies": {
     "dotenv": "^17.3.1",
@@ -27,9 +28,11 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.2",
+    "swagger-typescript-api": "^13.6.8",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "typescript-eslint": "^8.57.2"
+    "typescript-eslint": "^8.57.2",
+    "vitest": "^4.1.4"
   }
 }

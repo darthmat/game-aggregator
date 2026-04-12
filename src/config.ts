@@ -21,8 +21,9 @@ export const envSchema = z.object({
       base: z.string(),
       key: z.string(),
     }),
-    cheapshark: z.object({
+    itad: z.object({
       base: z.string(),
+      key: z.string(),
     }),
   }),
 });
@@ -45,8 +46,9 @@ export const config = envSchema.parse({
       base: process.env.RAWG_BASE_URL,
       key: process.env.RAWG_API_KEY,
     },
-    cheapshark: {
-      base: process.env.CHEAPSHARK_BASE_URL,
+    itad: {
+      base: process.env.ITAD_BASE_URL,
+      key: process.env.ITAD_API_KEY,
     },
   },
 });

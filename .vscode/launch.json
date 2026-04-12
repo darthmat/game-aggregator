@@ -4,13 +4,10 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug GraphQL API",
+      "name": "Debug",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["run", "start"],
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal",
-      "restart": true,
-      "envFile": "${workspaceFolder}/.env"
+      "runtimeArgs": ["develop"],
+      "skipFiles": ["<node_modules>/**"]
     }
   ]
 }

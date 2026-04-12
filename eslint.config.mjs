@@ -176,11 +176,12 @@ export default defineConfig(
     },
   },
   {
-    files: ['**/controllers/*-controller.ts'],
+    files: ['**/*.router.ts'],
 
     rules: {
       // With @Res() TsoaResponse<> you get a lot of anys (which is required for that to work).
       '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/naming-convention': 'off',
     },
   },
 );
