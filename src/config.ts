@@ -1,29 +1,30 @@
 import 'dotenv/config';
-import * as z from "zod";
-
+import * as z from 'zod';
 
 export const envSchema = z.object({
   port: z.coerce.number().default(4000),
-  db: z.object({
-    host: z.string(),
-    port: z.coerce.number(),
-    user: z.string(),
-    password: z.string(),
-    database: z.string(),
-  }).required(),
+  db: z
+    .object({
+      host: z.string(),
+      port: z.coerce.number(),
+      user: z.string(),
+      password: z.string(),
+      database: z.string(),
+    })
+    .required(),
   redis: z.object({
     host: z.string().default('localhost'),
     port: z.coerce.number().default(6379),
   }),
-  api: {
-    rawg: {
+  api: z.object({
+    rawg: z.object({
       base: z.string(),
       key: z.string(),
-    },
-    cheapshark: {
-      base: z.string()
-    }
-  }
+    }),
+    cheapshark: z.object({
+      base: z.string(),
+    }),
+  }),
 });
 
 export const config = envSchema.parse({
@@ -45,9 +46,9 @@ export const config = envSchema.parse({
       key: process.env.RAWG_API_KEY,
     },
     cheapshark: {
-      base: process.env.CHEAPSHARK_BASE_URL
-    }
-  }
-})
+      base: process.env.CHEAPSHARK_BASE_URL,
+    },
+  },
+});
 
 export type Config = typeof config;
