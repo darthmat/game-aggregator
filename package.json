@@ -12,9 +12,12 @@
     "generate:rawg-api-client": "swagger-typescript-api generate --disable-throw-on-error --generate-union-enums -p https://api.rawg.io/docs/?format=openapi -o src/libs/rawg-api/generated"
   },
   "dependencies": {
+    "@isaacs/ttlcache": "^2.1.4",
+    "@jeengbe/cache": "^7.0.0",
     "dotenv": "^17.3.1",
     "fastify": "^5.8.4",
     "fastify-graceful-shutdown": "^5.0.0",
+    "ioredis": "^5.10.1",
     "kysely": "^0.28.14",
     "pg": "^8.20.0",
     "zod": "^4.3.6"

@@ -15,6 +15,9 @@ export const envSchema = z.object({
   redis: z.object({
     host: z.string().default('localhost'),
     port: z.coerce.number().default(6379),
+    password: z.string().optional(),
+    sentinel: z.boolean().default(false),
+    db: z.number().default(0),
   }),
   api: z.object({
     rawg: z.object({
@@ -40,6 +43,9 @@ export const config = envSchema.parse({
   redis: {
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD,
+    sentinel: process.env.REDIS_SENTINEL,
+    db: process.env.REDIS_DB,
   },
   api: {
     rawg: {

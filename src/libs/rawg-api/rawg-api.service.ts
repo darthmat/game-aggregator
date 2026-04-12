@@ -21,7 +21,7 @@ export class RawgApiImplementation implements RawgApi {
     );
 
     if (!response.ok) {
-      new Error('Failed to fetch game from rawg.', {
+      throw new Error('Failed to fetch game from rawg.', {
         cause: {
           status: response.status,
           statusText: response.statusText,
@@ -30,10 +30,6 @@ export class RawgApiImplementation implements RawgApi {
       });
     }
 
-    return (await response.json().catch((error: unknown) => {
-      new Error('FFailed to fetch game from rawg.', {
-        cause: error,
-      });
-    })) as GameSingle;
+    return await (response.json() as Promise<GameSingle>);
   }
 }

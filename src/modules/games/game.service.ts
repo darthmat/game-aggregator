@@ -10,8 +10,10 @@ export class GameServiceImpl implements GameService {
   ) {}
 
   async getGame(title: string): Promise<GameDTO | null> {
-    const rawgGame = await this.rawgApi.getGame(title);
-    const itadGame = await this.itadApi.getGame(title);
+    const [rawgGame, itadGame] = await Promise.all([
+      this.rawgApi.getGame(title),
+      this.itadApi.getGame(title),
+    ]);
 
     if (!itadGame.found) return null;
 

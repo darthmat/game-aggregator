@@ -29,11 +29,7 @@ export class ItadApiImplementation implements ItadApi {
       });
     }
 
-    return (await response.json().catch((error: unknown) => {
-      new Error('Failed to fetch game from itad.', {
-        cause: error,
-      });
-    })) as ItadLookupResponse;
+    return await (response.json() as Promise<ItadLookupResponse>);
   }
 
   async getPrices(id: string): Promise<ItadPriceResponse> {
@@ -49,7 +45,7 @@ export class ItadApiImplementation implements ItadApi {
     );
 
     if (!response.ok) {
-      new Error('Failed to fetch game from itad.', {
+      throw new Error('Failed to fetch game from itad.', {
         cause: {
           status: response.status,
           statusText: response.statusText,
@@ -58,10 +54,6 @@ export class ItadApiImplementation implements ItadApi {
       });
     }
 
-    return (await response.json().catch((error: unknown) => {
-      new Error('Failed to fetch game from itad.', {
-        cause: error,
-      });
-    })) as ItadPriceResponse;
+    return (await response.json()) as ItadPriceResponse;
   }
 }

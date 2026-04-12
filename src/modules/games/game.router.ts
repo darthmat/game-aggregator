@@ -16,6 +16,7 @@ export class GamesRouter {
       '/games/:title',
       async (req, res): Promise<GameDTO | null> => {
         const { title } = req.params;
+
         return await this.gamesService
           .getGame(title)
           .catch((error: unknown) => {
