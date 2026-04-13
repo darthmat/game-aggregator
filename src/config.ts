@@ -2,6 +2,7 @@ import 'dotenv/config';
 import * as z from 'zod';
 
 export const envSchema = z.object({
+  host: z.string().default('localhost'),
   port: z.coerce.number().default(4000),
   db: z
     .object({
@@ -32,6 +33,7 @@ export const envSchema = z.object({
 });
 
 export const config = envSchema.parse({
+  host: process.env.APP_HOST,
   port: process.env.PORT,
   db: {
     host: process.env.DB_HOST,

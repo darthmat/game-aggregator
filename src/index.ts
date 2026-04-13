@@ -21,8 +21,7 @@ async function start() {
 
     await app.listen({
       port: config.port,
-      host: '0.0.0.0',
-      listenTextResolver: (address) => `Server is running at ${address}`,
+      host: config.host,
     });
   } catch (err) {
     app.log.error(err);

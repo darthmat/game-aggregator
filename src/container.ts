@@ -7,14 +7,14 @@ import { RawgApiImplementation } from './libs/rawg-api/rawg-api.service.js';
 import { GamesRouter } from './modules/games/game.router.js';
 import { GameServiceImpl } from './modules/games/game.service.js';
 import { HealthzRouter } from './modules/healthz/healthz.router.js';
-import { createCacheAdapter } from './utils/cache.js';
+import { createRedisCacheAdapter } from './utils/redis.js';
 
 export async function container(config: Config) {
   const db = createDatabase(config);
 
   const rawgApiService = new CachedRawgApi(
     new RawgApiImplementation(config.api.rawg.base, config.api.rawg.key),
-    new Cache(await createCacheAdapter(config)),
+    new Cache(await createRedisCacheAdapter(config)),
   );
 
   const itadApiService = new ItadApiImplementation(
