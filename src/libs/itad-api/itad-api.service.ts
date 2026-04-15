@@ -10,6 +10,7 @@ import {
   itadGameDealResponseSchema,
   itadGameInfoResponseSchema,
 } from './itad-api.schema.js';
+import { fetchWithTimeout } from '@/utils/fetch.js';
 
 export class ItadApiImplementation implements ItadApi {
   constructor(
@@ -19,7 +20,7 @@ export class ItadApiImplementation implements ItadApi {
   ) {}
 
   private async getGameLookup(title: string): Promise<ItadLookupResponse> {
-    const response = await this.customFetch(
+    const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games/lookup/v1`, { title }, this.key),
       {
         method: 'GET',
@@ -27,6 +28,8 @@ export class ItadApiImplementation implements ItadApi {
           'Content-Type': 'application/json',
         },
       },
+      5000,
+      this.customFetch,
     );
 
     if (!response.ok) {
@@ -45,7 +48,7 @@ export class ItadApiImplementation implements ItadApi {
   private async getGameInfo(
     id: string,
   ): Promise<ItadGameInfoRawResponse | null> {
-    const response = await this.customFetch(
+    const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games/info/v2`, { id }, this.key),
       {
         method: 'GET',
@@ -53,6 +56,8 @@ export class ItadApiImplementation implements ItadApi {
           'Content-Type': 'application/json',
         },
       },
+      5000,
+      this.customFetch,
     );
 
     if (response.status === 404) return null;
@@ -71,7 +76,7 @@ export class ItadApiImplementation implements ItadApi {
   }
 
   private async getPrices(id: string): Promise<ItadGamePriceRawResponse[]> {
-    const response = await this.customFetch(
+    const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games/prices/v3`, undefined, this.key),
       {
         method: 'POST',
@@ -80,6 +85,8 @@ export class ItadApiImplementation implements ItadApi {
         },
         body: JSON.stringify([id]),
       },
+      5000,
+      this.customFetch,
     );
 
     if (!response.ok) {

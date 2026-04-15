@@ -5,6 +5,7 @@ import {
   SearchRawgGameInfoResponse,
 } from './rawg-api.interface.js';
 import { rawgGameInfoResponseSchema } from './rawg-api.schema.js';
+import { fetchWithTimeout } from '@/utils/fetch.js';
 
 export class RawgApiImplementation implements RawgApi {
   constructor(
@@ -14,7 +15,7 @@ export class RawgApiImplementation implements RawgApi {
   ) {}
 
   async getGame(title: string): Promise<RawgGameInfoRawResponse | null> {
-    const response = await this.customFetch(
+    const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games/${title}`, undefined, this.key),
       {
         method: 'GET',
@@ -22,6 +23,8 @@ export class RawgApiImplementation implements RawgApi {
           'Content-Type': 'application/json',
         },
       },
+      5000,
+      this.customFetch,
     );
 
     if (response.status === 404) return null;
@@ -40,7 +43,7 @@ export class RawgApiImplementation implements RawgApi {
   }
 
   async searchGames(title: string): Promise<SearchRawgGameInfoResponse> {
-    const response = await this.customFetch(
+    const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games`, { search: title }, this.key),
       {
         method: 'GET',
@@ -48,6 +51,8 @@ export class RawgApiImplementation implements RawgApi {
           'Content-Type': 'application/json',
         },
       },
+      5000,
+      this.customFetch,
     );
 
     if (!response.ok) {

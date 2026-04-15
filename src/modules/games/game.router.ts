@@ -17,12 +17,13 @@ export class GamesRouter {
       async (req, res): Promise<GameDTO | null> => {
         const { title } = req.params;
 
-        const gameData = await this.gamesService
-          .getGame(title)
-          .catch((error: unknown) => {
-            res.status(503).send(error);
-            return null;
+        const gameData = await this.gamesService.getGame(title).catch(() => {
+          res.status(503).send({
+            error: 'Service Unavailable',
+            message: 'External API error',
           });
+          return null;
+        });
 
         if (!gameData) return null;
 
