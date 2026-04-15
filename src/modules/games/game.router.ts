@@ -1,5 +1,5 @@
 import { FastifyInstance, RouteGenericInterface } from 'fastify';
-import { GameDTO } from './game.dto.js';
+import { GameDTO, rawGameDataToDto } from './game.dto.js';
 import { GameService } from './game.interface.js';
 
 interface GameParams extends RouteGenericInterface {
@@ -17,12 +17,16 @@ export class GamesRouter {
       async (req, res): Promise<GameDTO | null> => {
         const { title } = req.params;
 
-        return await this.gamesService
+        const gameData = await this.gamesService
           .getGame(title)
           .catch((error: unknown) => {
             res.status(503).send(error);
             return null;
           });
+
+        if (!gameData) return null;
+
+        return rawGameDataToDto(gameData);
       },
     );
 

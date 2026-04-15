@@ -1,8 +1,10 @@
 import { Cache } from '@jeengbe/cache';
-import { GameSingle } from './generated/Api.js';
-import { RawgApi } from './interface.js';
+import { RawgApi, RawgGameInfoRawResponse } from './rawg-api.interface.js';
 
-export type RawgApiCacheTypes = Record<`rawg-games-api:${string}`, GameSingle>;
+export type RawgApiCacheTypes = Record<
+  `rawg-games-api:${string}`,
+  RawgGameInfoRawResponse | null
+>;
 
 export class CachedRawgApi implements RawgApi {
   constructor(
@@ -10,7 +12,7 @@ export class CachedRawgApi implements RawgApi {
     private readonly cache: Cache<RawgApiCacheTypes>,
   ) {}
 
-  async getGame(title: string): Promise<GameSingle> {
+  async getGame(title: string): Promise<RawgGameInfoRawResponse | null> {
     return await this.cache.cached(
       `rawg-games-api:${title}`,
       () => this.delegate.getGame(title),

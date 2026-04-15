@@ -1,7 +1,6 @@
-import { ItadApi } from '@/libs/itad-api/interface.js';
-import { RawgApi } from '@/libs/rawg-api/interface.js';
-import { GameDTO } from './game.dto.js';
-import { GameService } from './game.interface.js';
+import { ItadApi } from '@/libs/itad-api/itad-api.interface.js';
+import { RawgApi } from '@/libs/rawg-api/rawg-api.interface.js';
+import { GameService, RichGameProfile } from './game.interface.js';
 
 export class GameServiceImpl implements GameService {
   constructor(
@@ -9,16 +8,20 @@ export class GameServiceImpl implements GameService {
     private readonly itadApi: ItadApi,
   ) {}
 
-  async getGame(title: string): Promise<GameDTO | null> {
+  async getGame(title: string): Promise<RichGameProfile | null> {
     const [rawgGame, itadGame] = await Promise.all([
       this.rawgApi.getGame(title),
       this.itadApi.getGame(title),
     ]);
 
-    if (!itadGame.found) return null;
+    if (!rawgGame) return null;
 
-    const itadPrices = await this.itadApi.getPrices(itadGame.game.id);
-
-    return null;
+    return {
+      core: {
+        ...rawgGame,
+        ...itadGame?.info,
+      },
+      deals: itadGame?.deals ?? [],
+    };
   }
 }

@@ -1,7 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { RawgApi } from './interface.js';
 import { Cache } from '@jeengbe/cache';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CachedRawgApi, RawgApiCacheTypes } from './rawg-api.cache.js';
+import { FakeRawgApi } from './rawg-api.fake.js';
+import { RawgApi } from './rawg-api.interface.js';
+import { RawgApiImplementation } from './rawg-api.service.js';
+import { mockResponse } from '@/utils/mock.js';
 
 describe('CachedRawgApi', () => {
   let delegateMock: RawgApi;
@@ -65,5 +68,49 @@ describe('CachedRawgApi', () => {
 
     expect(delegateMock.getGame).toHaveBeenCalledWith('witcher-3');
     expect(delegateMock.getGame).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('RawgApiImplementation', () => {
+  let rawgApi: RawgApi;
+  const mockFetch = vi.fn();
+
+  beforeEach(() => {
+    rawgApi = new RawgApiImplementation('http://localhost', '', mockFetch);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should return null if no game from api', async () => {
+    mockFetch.mockResolvedValueOnce(
+      mockResponse(
+        {
+          ok: false,
+          message: 'Not Found',
+        },
+        404,
+      ),
+    );
+
+    const result = await rawgApi.getGame('null-game');
+
+    expect(result).toEqual(null);
+  });
+
+  it('should throw error on any other issue', async () => {
+    mockFetch.mockResolvedValueOnce(
+      mockResponse(
+        {
+          ok: false,
+          message: 'something went wrong',
+        },
+        500,
+      ),
+    );
+
+    const result = rawgApi.getGame('error-game');
+    await expect(result).rejects.toThrow('Failed to fetch game from rawg.');
   });
 });
