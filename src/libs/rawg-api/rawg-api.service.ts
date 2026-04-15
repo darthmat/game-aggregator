@@ -4,7 +4,7 @@ import {
   RawgGameInfoRawResponse,
   SearchRawgGameInfoResponse,
 } from './rawg-api.interface.js';
-import { rawgGameInfoResponseSchema } from './itad-api.schema.js';
+import { rawgGameInfoResponseSchema } from './rawg-api.schema.js';
 
 export class RawgApiImplementation implements RawgApi {
   constructor(

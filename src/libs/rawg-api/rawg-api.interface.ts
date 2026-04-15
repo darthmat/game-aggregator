@@ -1,5 +1,5 @@
 import z from 'zod';
-import { rawgGameInfoResponseSchema } from './itad-api.schema.js';
+import { rawgGameInfoResponseSchema } from './rawg-api.schema.js';
 
 export interface RawgApi {
   getGame(title: string): Promise<RawgGameInfoRawResponse | null>;

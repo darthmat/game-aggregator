@@ -1,12 +1,13 @@
 import { Kysely } from 'kysely';
+import { DbConfig } from '../dbConfig.js';
 import { createKyselyDialect } from './dialect.js';
-import { Config } from '@/config.js';
+import { GameAggregatorDatabaseTables } from './types.js';
 
-export function createDatabase(config: Config): Kysely<unknown> {
-  return new Kysely<unknown>({
-    dialect: createKyselyDialect(config),
-    log: ['query', 'error'],
+export function createDatabase(
+  dbConfig: DbConfig,
+): Kysely<GameAggregatorDatabaseTables> {
+  return new Kysely<GameAggregatorDatabaseTables>({
+    dialect: createKyselyDialect(dbConfig),
+    log: ['error'],
   });
 }
-
-export type Database = Kysely<unknown>;

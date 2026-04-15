@@ -9,7 +9,8 @@
     "build": "tsc && tsc-alias",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "vitest"
+    "test": "vitest",
+    "migrations": "tsx --env-file=.env src/database/migration.ts"
   },
   "dependencies": {
     "@isaacs/ttlcache": "^2.1.4",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@testcontainers/postgresql": "^11.14.0",
     "@tsconfig/node24": "^24.0.4",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.20.0",
@@ -31,6 +33,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "prettier": "^3.8.2",
+    "testcontainers": "^11.14.0",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",

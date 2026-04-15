@@ -1,11 +1,12 @@
 import { fastify } from 'fastify';
 import fastifyGracefulShutdown from 'fastify-graceful-shutdown';
-import { container } from './container.js';
 import { config } from './config.js';
+import { container } from './container.js';
+import { dbConfig } from './dbConfig.js';
 
 async function start() {
   const app = fastify({ logger: true });
-  const { healthzRouter, gameRouter } = await container(config);
+  const { healthzRouter, gameRouter } = await container(config, dbConfig);
 
   try {
     app.register(fastifyGracefulShutdown);
