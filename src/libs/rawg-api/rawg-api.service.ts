@@ -1,5 +1,9 @@
 import { urlBuilder } from '@/utils/urlBuilder.js';
-import { RawgApi, RawgGameInfoRawResponse } from './rawg-api.interface.js';
+import {
+  RawgApi,
+  RawgGameInfoRawResponse,
+  SearchRawgGameInfoResponse,
+} from './rawg-api.interface.js';
 import { rawgGameInfoResponseSchema } from './itad-api.schema.js';
 
 export class RawgApiImplementation implements RawgApi {
@@ -33,5 +37,29 @@ export class RawgApiImplementation implements RawgApi {
     }
 
     return rawgGameInfoResponseSchema.parse(await response.json());
+  }
+
+  async searchGames(title: string): Promise<SearchRawgGameInfoResponse> {
+    const response = await this.customFetch(
+      urlBuilder(`${this.baseUrl}/games`, { search: title }, this.key),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch games from rawg.', {
+        cause: {
+          status: response.status,
+          statusText: response.statusText,
+          body: await response.text(),
+        },
+      });
+    }
+
+    return (await response.json()) as SearchRawgGameInfoResponse;
   }
 }

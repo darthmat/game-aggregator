@@ -14,6 +14,7 @@ describe('CachedRawgApi', () => {
   beforeEach(() => {
     delegateMock = {
       getGame: vi.fn(),
+      searchGames: vi.fn(),
     };
 
     cacheMock = {
@@ -46,7 +47,6 @@ describe('CachedRawgApi', () => {
 
     expect(result).toEqual(mockedGame);
     expect(cacheMock.cached).toHaveBeenCalledTimes(1);
-
     expect(delegateMock.getGame).not.toHaveBeenCalled();
   });
 
@@ -65,7 +65,6 @@ describe('CachedRawgApi', () => {
     const result = await cachedApi.getGame('witcher-3');
 
     expect(result).toEqual(freshGame);
-
     expect(delegateMock.getGame).toHaveBeenCalledWith('witcher-3');
     expect(delegateMock.getGame).toHaveBeenCalledTimes(1);
   });
@@ -83,34 +82,55 @@ describe('RawgApiImplementation', () => {
     vi.clearAllMocks();
   });
 
-  it('should return null if no game from api', async () => {
-    mockFetch.mockResolvedValueOnce(
-      mockResponse(
-        {
-          ok: false,
-          message: 'Not Found',
-        },
-        404,
-      ),
-    );
+  describe('getGame', () => {
+    it('should return null if no game from api', async () => {
+      mockFetch.mockResolvedValueOnce(
+        mockResponse(
+          {
+            ok: false,
+            message: 'Not Found',
+          },
+          404,
+        ),
+      );
 
-    const result = await rawgApi.getGame('null-game');
+      const result = await rawgApi.getGame('null-game');
 
-    expect(result).toEqual(null);
+      expect(result).toEqual(null);
+    });
+
+    it('should throw error on any other issue', async () => {
+      mockFetch.mockResolvedValueOnce(
+        mockResponse(
+          {
+            ok: false,
+            message: 'something went wrong',
+          },
+          500,
+        ),
+      );
+
+      const result = rawgApi.getGame('error-game');
+
+      await expect(result).rejects.toThrow('Failed to fetch game from rawg.');
+    });
   });
 
-  it('should throw error on any other issue', async () => {
-    mockFetch.mockResolvedValueOnce(
-      mockResponse(
-        {
-          ok: false,
-          message: 'something went wrong',
-        },
-        500,
-      ),
-    );
+  describe('searchGames', () => {
+    it('should throw error on any other issue', async () => {
+      mockFetch.mockResolvedValueOnce(
+        mockResponse(
+          {
+            ok: false,
+            message: 'something went wrong',
+          },
+          500,
+        ),
+      );
 
-    const result = rawgApi.getGame('error-game');
-    await expect(result).rejects.toThrow('Failed to fetch game from rawg.');
+      const result = rawgApi.searchGames('error-game');
+
+      await expect(result).rejects.toThrow('Failed to fetch games from rawg.');
+    });
   });
 });

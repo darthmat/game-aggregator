@@ -1,10 +1,15 @@
 import { Cache } from '@jeengbe/cache';
-import { RawgApi, RawgGameInfoRawResponse } from './rawg-api.interface.js';
+import {
+  RawgApi,
+  RawgGameInfoRawResponse,
+  SearchRawgGameInfoResponse,
+} from './rawg-api.interface.js';
 
 export type RawgApiCacheTypes = Record<
   `rawg-games-api:${string}`,
   RawgGameInfoRawResponse | null
->;
+> &
+  Record<`rawg-games-api-search:${string}`, SearchRawgGameInfoResponse>;
 
 export class CachedRawgApi implements RawgApi {
   constructor(
@@ -16,6 +21,14 @@ export class CachedRawgApi implements RawgApi {
     return await this.cache.cached(
       `rawg-games-api:${title}`,
       () => this.delegate.getGame(title),
+      '1w',
+    );
+  }
+
+  async searchGames(title: string): Promise<SearchRawgGameInfoResponse> {
+    return await this.cache.cached(
+      `rawg-games-api-search:${title}`,
+      () => this.delegate.searchGames(title),
       '1w',
     );
   }
