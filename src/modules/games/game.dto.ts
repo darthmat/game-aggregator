@@ -38,9 +38,9 @@ export function rawGameDataToDto({ core, deals }: RichGameProfile): GameDTO {
     },
     image: core.backgroundImage ? new URL(core.backgroundImage) : null,
     platforms: core.platforms.map((platform) => platform.platform.name),
-    genres: core.tags ?? [],
-    developers: core.developers?.map((developer) => developer.name) ?? [],
-    publishers: core.publishers?.map((publisher) => publisher.name) ?? [],
+    genres: core.genres.map((genre) => genre.name),
+    developers: core.developers.map((developer) => developer.name),
+    publishers: core.publishers.map((publisher) => publisher.name),
     website: core.website ? new URL(core.website) : null,
     deals: deals.map((deal) => {
       return {

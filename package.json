@@ -13,6 +13,7 @@
     "migrations": "tsx --env-file=.env src/database/migration.ts"
   },
   "dependencies": {
+    "@fastify/rate-limit": "^10.3.0",
     "@isaacs/ttlcache": "^2.1.4",
     "@jeengbe/cache": "^7.0.0",
     "dotenv": "^17.3.1",
@@ -20,6 +21,7 @@
     "fastify-graceful-shutdown": "^5.0.0",
     "ioredis": "^5.10.1",
     "kysely": "^0.28.14",
+    "p-limit": "^7.3.0",
     "pg": "^8.20.0",
     "zod": "^4.3.6"
   },

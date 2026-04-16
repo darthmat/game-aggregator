@@ -7,8 +7,10 @@ import {
 } from './itad-api.interface.js';
 import { itadGameDealResponseSchema } from './itad-api.schema.js';
 import { fetchWithTimeout } from '@/utils/fetch.js';
+import pLimit from 'p-limit';
 
 export class ItadApiImplementation implements ItadApi {
+  private limit = pLimit(2);
   constructor(
     private readonly baseUrl: string,
     private readonly key: string,
@@ -16,16 +18,19 @@ export class ItadApiImplementation implements ItadApi {
   ) {}
 
   private async getGameLookup(title: string): Promise<ItadLookupResponse> {
-    const response = await fetchWithTimeout(
-      urlBuilder(`${this.baseUrl}/games/lookup/v1`, { title }, this.key),
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-      5000,
-      this.customFetch,
+    const response = await this.limit(
+      async () =>
+        await fetchWithTimeout(
+          urlBuilder(`${this.baseUrl}/games/lookup/v1`, { title }, this.key),
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+          5000,
+          this.customFetch,
+        ),
     );
 
     if (!response.ok) {
@@ -42,17 +47,20 @@ export class ItadApiImplementation implements ItadApi {
   }
 
   private async getPrices(id: string): Promise<ItadGamePriceRawResponse[]> {
-    const response = await fetchWithTimeout(
-      urlBuilder(`${this.baseUrl}/games/prices/v3`, undefined, this.key),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify([id]),
-      },
-      5000,
-      this.customFetch,
+    const response = await this.limit(
+      async () =>
+        await fetchWithTimeout(
+          urlBuilder(`${this.baseUrl}/games/prices/v3`, undefined, this.key),
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify([id]),
+          },
+          5000,
+          this.customFetch,
+        ),
     );
 
     if (!response.ok) {

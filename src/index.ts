@@ -3,6 +3,7 @@ import fastifyGracefulShutdown from 'fastify-graceful-shutdown';
 import { config } from './config.js';
 import { container } from './container.js';
 import { dbConfig } from './dbConfig.js';
+import fastifyRateLimit from '@fastify/rate-limit';
 
 async function start() {
   const app = fastify({ logger: true });
@@ -10,7 +11,10 @@ async function start() {
 
   try {
     app.register(fastifyGracefulShutdown);
-
+    app.register(fastifyRateLimit, {
+      max: 30,
+      timeWindow: '1 minute',
+    });
     healthzRouter.register(app);
     gameRouter.register(app);
 
