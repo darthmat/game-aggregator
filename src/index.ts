@@ -7,7 +7,10 @@ import fastifyRateLimit from '@fastify/rate-limit';
 
 async function start() {
   const app = fastify({ logger: true });
-  const { healthzRouter, gameRouter } = await container(config, dbConfig);
+  const { healthzRouter, gameRouter, searchHistoryRouter } = await container(
+    config,
+    dbConfig,
+  );
 
   try {
     app.register(fastifyGracefulShutdown);
@@ -17,6 +20,7 @@ async function start() {
     });
     healthzRouter.register(app);
     gameRouter.register(app);
+    searchHistoryRouter.register(app);
 
     app.after(() => {
       app.gracefulShutdown(async (signal) => {

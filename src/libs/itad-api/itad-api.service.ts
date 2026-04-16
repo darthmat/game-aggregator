@@ -1,15 +1,15 @@
+import { fetchWithTimeout } from '@/utils/abort.js';
 import { urlBuilder } from '@/utils/urlBuilder.js';
+import pLimit from 'p-limit';
 import {
-  ItadApi,
+  IItadApi,
   ItadCompleteData,
   ItadGamePriceRawResponse,
   ItadLookupResponse,
 } from './itad-api.interface.js';
 import { v3ResponseSchema } from './itad-api.schema.js';
-import { fetchWithTimeout } from '@/utils/fetch.js';
-import pLimit from 'p-limit';
 
-export class ItadApiImplementation implements ItadApi {
+export class ItadApiImplementation implements IItadApi {
   private limit = pLimit(2);
   constructor(
     private readonly baseUrl: string,
@@ -82,7 +82,7 @@ export class ItadApiImplementation implements ItadApi {
     return gameData ? gameData.deals : [];
   }
 
-  async getGame(
+  async getGameDeals(
     title: string,
     country: string,
   ): Promise<ItadCompleteData | null> {

@@ -1,10 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ItadApi } from './itad-api.interface.js';
-import { ItadApiImplementation } from './itad-api.service.js';
 import { mockResponse } from '@/utils/mock.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { IItadApi } from './itad-api.interface.js';
+import { ItadApiImplementation } from './itad-api.service.js';
 
 describe('ItadgApiImplementation', () => {
-  let itadApi: ItadApi;
+  let itadApi: IItadApi;
   const mockFetch = vi.fn();
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('ItadgApiImplementation', () => {
       }),
     );
 
-    const result = await itadApi.getGame('null-game');
+    const result = await itadApi.getGameDeals('null-game');
 
     expect(result).equal(null);
   });
@@ -38,18 +38,18 @@ describe('ItadgApiImplementation', () => {
       ),
     );
 
-    const result = itadApi.getGame('null-game');
+    const result = itadApi.getGameDeals('null-game');
 
     await expect(result).rejects.toThrow('Failed to fetch game from itad.');
   });
 
   it('should return empty deals if getPrices throws', async () => {
     mockFetch.mockResolvedValueOnce(
-      mockResponse({ found: true, id: 'abc123' }),
+      mockResponse({ found: true, game: { id: 'abc123' } }),
     );
     mockFetch.mockResolvedValueOnce(mockResponse({ ok: false }, 500));
 
-    const result = await itadApi.getGame('factorio');
+    const result = await itadApi.getGameDeals('factorio');
 
     expect(result).toEqual({
       deals: [],

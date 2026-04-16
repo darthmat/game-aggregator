@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-/* RAWG api unfortunately use some snake case data*/
+/* RAWG api unfortunately use some snake case data */
 import z from 'zod';
 
-export const rawgGameInfoResponseSchema = z
-  .object({
-    slug: z.string(),
-    name: z.string(),
+const rawgBaseGameSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  rating: z.number().nullish().default(0),
+  background_image: z.string().nullish(),
+  platforms: z
+    .array(z.object({ platform: z.object({ name: z.string() }) }))
+    .default([]),
+});
+
+export const rawgGameInfoResponseSchema = rawgBaseGameSchema
+  .extend({
     description: z.string().nullish().default(''),
     released: z.string().nullish(),
-    background_image: z.string().nullish(),
     website: z.string().catch(''),
-    rating: z.number().nullish().default(0),
     rating_top: z.number().nullish().default(0),
     ratings_count: z.number().nullish().default(0),
-    platforms: z
-      .array(z.object({ platform: z.object({ name: z.string() }) }))
-      .default([]),
     developers: z
       .array(
         z.object({
@@ -54,4 +57,19 @@ export const rawgGameInfoResponseSchema = z
     genres: data.genres,
   }));
 
-export type RawgGameInfo = z.infer<typeof rawgGameInfoResponseSchema>;
+export const rawgSearchResponseSchema = rawgBaseGameSchema.transform(
+  (data) => ({
+    slug: data.slug,
+    title: data.name,
+    backgroundImage: data.background_image,
+    rating: data.rating,
+    platforms: data.platforms,
+  }),
+);
+
+export const searchRawgGameInfoResponseSchema = z.object({
+  count: z.number(),
+  results: z.array(rawgSearchResponseSchema),
+  next: z.string().nullable(),
+  previous: z.string().nullable(),
+});

@@ -1,16 +1,22 @@
 import { FastifyInstance } from 'fastify';
+import { ISearchHistoryService } from './search-history.interface.js';
+import { SearchHistoryDTO } from './search-history.dto.js';
 
 export class SearchHistoryRouter {
-  constructor(private readonly searchHistoryService: unknown) {}
+  constructor(private readonly searchHistoryService: ISearchHistoryService) {}
 
-  async register(fastify: FastifyInstance) {
-    fastify.get('//search-history/popular', async (req, res) => {
-      try {
-        throw Error('not yet implemented');
-      } catch (error: unknown) {
-        new Error('something went wrong');
-        res.status(503).send();
-      }
-    });
+  register(fastify: FastifyInstance) {
+    fastify.get(
+      '/search-history/popular',
+      async (_req, res): Promise<SearchHistoryDTO[]> => {
+        return await this.searchHistoryService.getSearchHistory().catch(() => {
+          res.status(503).send({
+            error: 'Service Unavailable',
+            message: 'External API error',
+          });
+          return [];
+        });
+      },
+    );
   }
 }

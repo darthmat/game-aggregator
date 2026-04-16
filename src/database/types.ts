@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Kysely } from 'kysely';
+import { Kysely, Generated } from 'kysely';
 
 export type Database = Kysely<GameAggregatorDatabaseTables>;
 
@@ -8,7 +8,7 @@ export interface GameAggregatorDatabaseTables {
 }
 
 interface SearchHistoryTable {
-  id: number;
+  id: Generated<number>;
   query: string;
-  created_at: Date;
+  created_at: Generated<Date>;
 }

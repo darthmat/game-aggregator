@@ -1,13 +1,12 @@
+import { mockResponse } from '@/utils/mock.js';
 import { Cache } from '@jeengbe/cache';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CachedRawgApi, RawgApiCacheTypes } from './rawg-api.cache.js';
-import { FakeRawgApi } from './rawg-api.fake.js';
-import { RawgApi } from './rawg-api.interface.js';
+import { IRawgApi } from './rawg-api.interface.js';
 import { RawgApiImplementation } from './rawg-api.service.js';
-import { mockResponse } from '@/utils/mock.js';
 
 describe('CachedRawgApi', () => {
-  let delegateMock: RawgApi;
+  let delegateMock: IRawgApi;
   let cacheMock: Partial<Cache<RawgApiCacheTypes>>;
   let cachedApi: CachedRawgApi;
 
@@ -71,7 +70,7 @@ describe('CachedRawgApi', () => {
 });
 
 describe('RawgApiImplementation', () => {
-  let rawgApi: RawgApi;
+  let rawgApi: IRawgApi;
   const mockFetch = vi.fn();
 
   beforeEach(() => {

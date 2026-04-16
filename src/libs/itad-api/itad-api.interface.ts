@@ -1,8 +1,11 @@
 import z from 'zod';
 import { itadGameDealResponseSchema } from './itad-api.schema.js';
 
-export interface ItadApi {
-  getGame(title: string, country?: string): Promise<ItadCompleteData | null>;
+export interface IItadApi {
+  getGameDeals(
+    title: string,
+    country?: string,
+  ): Promise<ItadCompleteData | null>;
 }
 
 export interface ItadCompleteData {

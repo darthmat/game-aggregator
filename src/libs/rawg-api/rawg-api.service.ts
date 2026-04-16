@@ -1,14 +1,17 @@
+import { fetchWithTimeout } from '@/utils/abort.js';
 import { urlBuilder } from '@/utils/urlBuilder.js';
-import {
-  RawgApi,
-  RawgGameInfoRawResponse,
-  SearchRawgGameInfoResponse,
-} from './rawg-api.interface.js';
-import { rawgGameInfoResponseSchema } from './rawg-api.schema.js';
-import { fetchWithTimeout } from '@/utils/fetch.js';
 import pLimit from 'p-limit';
+import {
+  IRawgApi,
+  RawgGameInfoRawResponse,
+  RawgSearchGameInfoResponse,
+} from './rawg-api.interface.js';
+import {
+  rawgGameInfoResponseSchema,
+  searchRawgGameInfoResponseSchema,
+} from './rawg-api.schema.js';
 
-export class RawgApiImplementation implements RawgApi {
+export class RawgApiImplementation implements IRawgApi {
   private limit = pLimit(2);
   constructor(
     private readonly baseUrl: string,
@@ -47,7 +50,7 @@ export class RawgApiImplementation implements RawgApi {
     return rawgGameInfoResponseSchema.parse(await response.json());
   }
 
-  async searchGames(title: string): Promise<SearchRawgGameInfoResponse> {
+  async searchGames(title: string): Promise<RawgSearchGameInfoResponse> {
     const response = await this.limit(
       async () =>
         await fetchWithTimeout(
@@ -73,6 +76,6 @@ export class RawgApiImplementation implements RawgApi {
       });
     }
 
-    return (await response.json()) as SearchRawgGameInfoResponse;
+    return searchRawgGameInfoResponseSchema.parse(await response.json());
   }
 }

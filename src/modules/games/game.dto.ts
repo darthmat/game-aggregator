@@ -11,6 +11,7 @@ export interface GameDTO {
   readonly developers: readonly string[];
   readonly publishers: readonly string[];
   readonly website: URL | null;
+  readonly slug: string;
   readonly deals: readonly Deal[];
 }
 
@@ -36,6 +37,7 @@ export function rawGameDataToDto({ core, deals }: RichGameProfile): GameDTO {
       average: core.rating ?? 0,
       count: core.ratingCount ?? 0,
     },
+    slug: core.slug,
     image: core.backgroundImage ? new URL(core.backgroundImage) : null,
     platforms: core.platforms.map((platform) => platform.platform.name),
     genres: core.genres.map((genre) => genre.name),

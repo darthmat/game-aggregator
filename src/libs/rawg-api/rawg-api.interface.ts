@@ -1,18 +1,21 @@
 import z from 'zod';
-import { rawgGameInfoResponseSchema } from './rawg-api.schema.js';
+import {
+  rawgGameInfoResponseSchema,
+  rawgSearchResponseSchema,
+  searchRawgGameInfoResponseSchema,
+} from './rawg-api.schema.js';
 
-export interface RawgApi {
+export interface IRawgApi {
   getGame(title: string): Promise<RawgGameInfoRawResponse | null>;
-  searchGames(title: string): Promise<SearchRawgGameInfoResponse>;
+  searchGames(title: string): Promise<RawgSearchGameInfoResponse>;
 }
 
 export type RawgGameInfoRawResponse = z.infer<
   typeof rawgGameInfoResponseSchema
 >;
 
-export interface SearchRawgGameInfoResponse {
-  count: number;
-  results: RawgGameInfoRawResponse[];
-  next: string | null;
-  previous: string | null;
-}
+export type RawgSearchGameInfoResponse = z.infer<
+  typeof searchRawgGameInfoResponseSchema
+>;
+
+export type RawgSearchResponse = z.infer<typeof rawgSearchResponseSchema>;

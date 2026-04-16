@@ -1,6 +1,6 @@
 import { vitest } from 'vitest';
-import { ItadApi } from './itad-api.interface.js';
+import { IItadApi } from './itad-api.interface.js';
 
-export class FakeItadApi implements ItadApi {
-  getGame = vitest.fn<ItadApi['getGame']>(async () => null);
+export class FakeItadApi implements IItadApi {
+  getGameDeals = vitest.fn<IItadApi['getGameDeals']>(async () => null);
 }
