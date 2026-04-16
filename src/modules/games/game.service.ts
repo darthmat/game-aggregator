@@ -8,10 +8,13 @@ export class GameServiceImpl implements GameService {
     private readonly itadApi: ItadApi,
   ) {}
 
-  async getGame(title: string): Promise<RichGameProfile | null> {
+  async getGame(
+    title: string,
+    country?: string,
+  ): Promise<RichGameProfile | null> {
     const [rawgGame, itadGame] = await Promise.all([
       this.rawgApi.getGame(title),
-      this.itadApi.getGame(title),
+      this.itadApi.getGame(title, country),
     ]);
 
     if (!rawgGame) return null;

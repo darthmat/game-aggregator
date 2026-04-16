@@ -5,6 +5,7 @@ import { GameService } from './game.interface.js';
 interface GameParams extends RouteGenericInterface {
   Params: {
     title: string;
+    country?: string;
   };
 }
 
@@ -13,17 +14,19 @@ export class GamesRouter {
 
   register(fastify: FastifyInstance) {
     fastify.get<GameParams>(
-      '/games/:title',
+      '/games/:title/:country?',
       async (req, res): Promise<GameDTO | null> => {
-        const { title } = req.params;
+        const { title, country } = req.params;
 
-        const gameData = await this.gamesService.getGame(title).catch(() => {
-          res.status(503).send({
-            error: 'Service Unavailable',
-            message: 'External API error',
+        const gameData = await this.gamesService
+          .getGame(title, country)
+          .catch(() => {
+            res.status(503).send({
+              error: 'Service Unavailable',
+              message: 'External API error',
+            });
+            return null;
           });
-          return null;
-        });
 
         if (!gameData) return null;
 

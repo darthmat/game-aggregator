@@ -2,7 +2,7 @@ import z from 'zod';
 import { itadGameDealResponseSchema } from './itad-api.schema.js';
 
 export interface ItadApi {
-  getGame(title: string): Promise<ItadCompleteData | null>;
+  getGame(title: string, country?: string): Promise<ItadCompleteData | null>;
 }
 
 export interface ItadCompleteData {
@@ -17,7 +17,9 @@ interface ItadLookupNotFound {
 
 interface ItadLookupFound {
   found: true;
-  id: string;
+  game: {
+    id: string;
+  };
 }
 
 export type ItadGamePriceRawResponse = z.infer<

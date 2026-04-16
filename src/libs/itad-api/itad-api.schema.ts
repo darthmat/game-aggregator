@@ -24,3 +24,10 @@ export const itadGameDealResponseSchema = z
     ...rest,
     dealPlatforms: platforms,
   }));
+
+export const v3ResponseSchema = z.array(
+  z.object({
+    id: z.string(),
+    deals: z.array(itadGameDealResponseSchema),
+  }),
+);

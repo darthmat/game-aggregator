@@ -5,7 +5,7 @@ import {
   ItadGamePriceRawResponse,
   ItadLookupResponse,
 } from './itad-api.interface.js';
-import { itadGameDealResponseSchema } from './itad-api.schema.js';
+import { v3ResponseSchema } from './itad-api.schema.js';
 import { fetchWithTimeout } from '@/utils/fetch.js';
 import pLimit from 'p-limit';
 
@@ -46,11 +46,14 @@ export class ItadApiImplementation implements ItadApi {
     return await (response.json() as Promise<ItadLookupResponse>);
   }
 
-  private async getPrices(id: string): Promise<ItadGamePriceRawResponse[]> {
+  private async getPrices(
+    id: string,
+    country: string,
+  ): Promise<ItadGamePriceRawResponse[]> {
     const response = await this.limit(
       async () =>
         await fetchWithTimeout(
-          urlBuilder(`${this.baseUrl}/games/prices/v3`, undefined, this.key),
+          urlBuilder(`${this.baseUrl}/games/prices/v3`, { country }, this.key),
           {
             method: 'POST',
             headers: {
@@ -73,15 +76,23 @@ export class ItadApiImplementation implements ItadApi {
       });
     }
 
-    return [itadGameDealResponseSchema.parse(await response.json())];
+    const parsedData = v3ResponseSchema.parse(await response.json());
+    const gameData = parsedData.find((game) => game.id === id);
+
+    return gameData ? gameData.deals : [];
   }
 
-  async getGame(title: string): Promise<ItadCompleteData | null> {
+  async getGame(
+    title: string,
+    country: string,
+  ): Promise<ItadCompleteData | null> {
     const gameLookup = await this.getGameLookup(title);
 
     if (!gameLookup.found) return null;
 
-    const gameDeals = await this.getPrices(gameLookup.id).catch(() => null);
+    const gameDeals = await this.getPrices(gameLookup.game.id, country).catch(
+      () => null,
+    );
 
     return {
       deals: gameDeals ?? [],
