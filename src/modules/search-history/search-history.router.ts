@@ -12,7 +12,7 @@ export class SearchHistoryRouter {
         return await this.searchHistoryService.getSearchHistory().catch(() => {
           res.status(503).send({
             error: 'Service Unavailable',
-            message: 'External API error',
+            message: 'Database error',
           });
           return [];
         });

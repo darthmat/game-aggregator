@@ -13,6 +13,12 @@ export const initialMigration: Migration = {
         col.defaultTo(sql`now()`).notNull(),
       )
       .execute();
+
+    await db.schema
+      .createIndex('search_history_query_idx')
+      .on('search_history')
+      .column('query')
+      .execute();
   },
   async down(db) {
     await db.schema.dropTable('search_history').execute();

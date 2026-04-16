@@ -16,8 +16,11 @@ export class CachedItadApi implements IItadApi {
     title: string,
     country = 'US',
   ): Promise<ItadCompleteData | null> {
+    const cacheTitle = title.trim().toLowerCase();
+    const cacheCountry = country.trim().toUpperCase();
+
     return await this.cache.cached(
-      `itad-games-api:${title}:${country}`,
+      `itad-games-api:${cacheTitle}:${cacheCountry}`,
       () => this.delegate.getGameDeals(title),
       '1h',
     );

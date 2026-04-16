@@ -45,7 +45,7 @@ export class GamesRouter {
     server.get(
       '/games/search',
       {
-        schema: { querystring: gameSearchSchema }, // <- Tutaj podpinasz schemat
+        schema: { querystring: gameSearchSchema },
       },
       async (req, res): Promise<SearchGameDTO[]> => {
         const { title } = req.query;

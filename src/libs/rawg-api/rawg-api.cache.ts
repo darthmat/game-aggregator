@@ -18,16 +18,20 @@ export class CachedRawgApi implements IRawgApi {
   ) {}
 
   async getGame(title: string): Promise<RawgGameInfoRawResponse | null> {
+    const cacheTitle = title.trim().toLowerCase();
+
     return await this.cache.cached(
-      `rawg-games-api:${title}`,
+      `rawg-games-api:${cacheTitle}`,
       () => this.delegate.getGame(title),
       '1w',
     );
   }
 
   async searchGames(title: string): Promise<RawgSearchGameInfoResponse> {
+    const cacheTitle = title.trim().toLowerCase();
+
     return await this.cache.cached(
-      `rawg-games-api-search:${title}`,
+      `rawg-games-api-search:${cacheTitle}`,
       () => this.delegate.searchGames(title),
       '1w',
     );
