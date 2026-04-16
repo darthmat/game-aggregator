@@ -19,14 +19,15 @@ import { GameEventPublisher } from './modules/games/game.publisher.js';
 export async function container(config: Config, dbConfig: DbConfig) {
   const db = createDatabase(dbConfig);
   const appEvents = new EventEmitter();
+  const { client: redis, cacheAdapter } = await createRedisCacheAdapter(config);
 
   const rawgApiService = new CachedRawgApi(
     new RawgApiImplementation(config.api.rawg.base, config.api.rawg.key),
-    new Cache(await createRedisCacheAdapter(config)),
+    new Cache(cacheAdapter),
   );
   const itadApiService = new CachedItadApi(
     new ItadApiImplementation(config.api.itad.base, config.api.itad.key),
-    new Cache(await createRedisCacheAdapter(config)),
+    new Cache(cacheAdapter),
   );
   const gameEventPublisher = new GameEventPublisher(appEvents);
 
@@ -47,5 +48,5 @@ export async function container(config: Config, dbConfig: DbConfig) {
   const gameRouter = new GamesRouter(gameService);
   const searchHistoryRouter = new SearchHistoryRouter(searchHistoryService);
 
-  return { db, healthzRouter, gameRouter, searchHistoryRouter };
+  return { redis, db, healthzRouter, gameRouter, searchHistoryRouter };
 }

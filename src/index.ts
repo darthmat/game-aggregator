@@ -4,15 +4,20 @@ import { config } from './config.js';
 import { container } from './container.js';
 import { dbConfig } from './dbConfig.js';
 import fastifyRateLimit from '@fastify/rate-limit';
+import {
+  validatorCompiler,
+  serializerCompiler,
+} from 'fastify-type-provider-zod';
 
 async function start() {
   const app = fastify({ logger: true });
-  const { healthzRouter, gameRouter, searchHistoryRouter } = await container(
-    config,
-    dbConfig,
-  );
+  const { redis, db, healthzRouter, gameRouter, searchHistoryRouter } =
+    await container(config, dbConfig);
 
   try {
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+
     app.register(fastifyGracefulShutdown);
     app.register(fastifyRateLimit, {
       max: 30,
@@ -24,6 +29,7 @@ async function start() {
 
     app.after(() => {
       app.gracefulShutdown(async (signal) => {
+        await Promise.all([db.destroy(), redis.quit()]);
         app.log.info('Received signal to shutdown: %s', signal);
       });
     });

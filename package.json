@@ -19,6 +19,7 @@
     "dotenv": "^17.3.1",
     "fastify": "^5.8.4",
     "fastify-graceful-shutdown": "^5.0.0",
+    "fastify-type-provider-zod": "^6.1.0",
     "ioredis": "^5.10.1",
     "kysely": "^0.28.14",
     "p-limit": "^7.3.0",

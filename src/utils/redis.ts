@@ -10,19 +10,25 @@ export interface RedisConfig {
   db?: number;
 }
 
-export async function createRedisCacheAdapter(
-  config: Config,
-): Promise<CacheAdapter> {
+interface IRedis {
+  cacheAdapter: CacheAdapter;
+  client: Redis;
+}
+
+export async function createRedisCacheAdapter(config: Config): Promise<IRedis> {
   assert(config.redis.host, 'Redis host must be set');
 
-  const redis = new Redis(createRedisOptions(config.redis));
+  const client = new Redis(createRedisOptions(config.redis));
 
   await new Promise<void>((resolve, reject) => {
-    redis.once('ready', resolve);
-    redis.once('error', reject);
+    client.once('ready', resolve);
+    client.once('error', reject);
   });
 
-  return new RedisCacheAdapter(redis);
+  return {
+    cacheAdapter: new RedisCacheAdapter(client),
+    client,
+  };
 }
 
 function createRedisOptions(config: RedisConfig): RedisOptions {
