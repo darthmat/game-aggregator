@@ -9,6 +9,7 @@ import { GamesRouter } from './modules/games/game.router.js';
 import { GameServiceImpl } from './modules/games/game.service.js';
 import { HealthzRouter } from './modules/healthz/healthz.router.js';
 import { createRedisCacheAdapter } from './utils/redis.js';
+import { CachedItadApi } from './libs/itad-api/itad-api.cache.js';
 
 export async function container(config: Config, dbConfig: DbConfig) {
   const db = createDatabase(dbConfig);
@@ -17,9 +18,9 @@ export async function container(config: Config, dbConfig: DbConfig) {
     new RawgApiImplementation(config.api.rawg.base, config.api.rawg.key),
     new Cache(await createRedisCacheAdapter(config)),
   );
-  const itadApiService = new ItadApiImplementation(
-    config.api.itad.base,
-    config.api.itad.key,
+  const itadApiService = new CachedItadApi(
+    new ItadApiImplementation(config.api.itad.base, config.api.itad.key),
+    new Cache(await createRedisCacheAdapter(config)),
   );
 
   const gameService = new GameServiceImpl(rawgApiService, itadApiService);

@@ -47,27 +47,11 @@ describe('ItadgApiImplementation', () => {
     mockFetch.mockResolvedValueOnce(
       mockResponse({ found: true, id: 'abc123' }),
     );
-    mockFetch.mockResolvedValueOnce(
-      mockResponse({
-        slug: 'factorio',
-        title: 'factorio',
-        tags: [],
-        developers: [],
-        publishers: [],
-      }),
-    );
     mockFetch.mockResolvedValueOnce(mockResponse({ ok: false }, 500));
 
     const result = await itadApi.getGame('factorio');
 
     expect(result).toEqual({
-      info: {
-        slug: 'factorio',
-        title: 'factorio',
-        tags: [],
-        developers: [],
-        publishers: [],
-      },
       deals: [],
     });
   });

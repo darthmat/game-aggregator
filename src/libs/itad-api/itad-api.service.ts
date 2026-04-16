@@ -2,14 +2,10 @@ import { urlBuilder } from '@/utils/urlBuilder.js';
 import {
   ItadApi,
   ItadCompleteData,
-  ItadGameInfoRawResponse,
   ItadGamePriceRawResponse,
   ItadLookupResponse,
 } from './itad-api.interface.js';
-import {
-  itadGameDealResponseSchema,
-  itadGameInfoResponseSchema,
-} from './itad-api.schema.js';
+import { itadGameDealResponseSchema } from './itad-api.schema.js';
 import { fetchWithTimeout } from '@/utils/fetch.js';
 
 export class ItadApiImplementation implements ItadApi {
@@ -45,36 +41,6 @@ export class ItadApiImplementation implements ItadApi {
     return await (response.json() as Promise<ItadLookupResponse>);
   }
 
-  private async getGameInfo(
-    id: string,
-  ): Promise<ItadGameInfoRawResponse | null> {
-    const response = await fetchWithTimeout(
-      urlBuilder(`${this.baseUrl}/games/info/v2`, { id }, this.key),
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-      5000,
-      this.customFetch,
-    );
-
-    if (response.status === 404) return null;
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch game from itad.', {
-        cause: {
-          status: response.status,
-          statusText: response.statusText,
-          body: await response.text(),
-        },
-      });
-    }
-
-    return itadGameInfoResponseSchema.parse(await response.json());
-  }
-
   private async getPrices(id: string): Promise<ItadGamePriceRawResponse[]> {
     const response = await fetchWithTimeout(
       urlBuilder(`${this.baseUrl}/games/prices/v3`, undefined, this.key),
@@ -107,15 +73,9 @@ export class ItadApiImplementation implements ItadApi {
 
     if (!gameLookup.found) return null;
 
-    const gameId = gameLookup.id;
-
-    const [gameInfo, gameDeals] = await Promise.all([
-      this.getGameInfo(gameId),
-      this.getPrices(gameId).catch(() => null),
-    ]);
+    const gameDeals = await this.getPrices(gameLookup.id).catch(() => null);
 
     return {
-      info: gameInfo,
       deals: gameDeals ?? [],
     };
   }

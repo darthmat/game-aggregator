@@ -16,6 +16,27 @@ export const rawgGameInfoResponseSchema = z
     platforms: z
       .array(z.object({ platform: z.object({ name: z.string() }) }))
       .default([]),
+    developers: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .default([]),
+    publishers: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .default([]),
+    genres: z
+      .array(
+        z.object({
+          name: z.string(),
+        }),
+      )
+      .default([]),
   })
   .transform((data) => ({
     slug: data.slug,
@@ -28,6 +49,9 @@ export const rawgGameInfoResponseSchema = z
     ratingTop: data.rating_top,
     ratingCount: data.ratings_count,
     platforms: data.platforms,
+    developers: data.developers,
+    publishers: data.publishers,
+    genres: data.genres,
   }));
 
 export type RawgGameInfo = z.infer<typeof rawgGameInfoResponseSchema>;

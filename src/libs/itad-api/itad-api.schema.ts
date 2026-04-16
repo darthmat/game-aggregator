@@ -24,21 +24,3 @@ export const itadGameDealResponseSchema = z
     ...rest,
     dealPlatforms: platforms,
   }));
-
-export const itadGameInfoResponseSchema = z.object({
-  slug: z.string(),
-  title: z.string(),
-  tags: z.array(z.string()),
-  developers: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-    }),
-  ),
-  publishers: z.array(
-    z.object({
-      id: z.number(),
-      name: z.string(),
-    }),
-  ),
-});

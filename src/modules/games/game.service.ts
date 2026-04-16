@@ -17,10 +17,7 @@ export class GameServiceImpl implements GameService {
     if (!rawgGame) return null;
 
     return {
-      core: {
-        ...rawgGame,
-        ...itadGame?.info,
-      },
+      core: rawgGame,
       deals: itadGame?.deals ?? [],
     };
   }

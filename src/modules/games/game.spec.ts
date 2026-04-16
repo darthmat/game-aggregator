@@ -28,26 +28,12 @@ describe('GameServiceImpl', () => {
       released: undefined,
       backgroundImage: undefined,
       platforms: [],
+      publishers: [{ name: 'Wube' }],
+      developers: [{ name: 'Wube' }],
+      genres: [],
     });
 
     itadApi.getGame.mockResolvedValue({
-      info: {
-        slug: 'factorio',
-        title: 'factorio',
-        tags: ['rts'],
-        developers: [
-          {
-            id: 123,
-            name: 'Wube',
-          },
-        ],
-        publishers: [
-          {
-            id: 123,
-            name: 'Wube',
-          },
-        ],
-      },
       deals: [
         {
           shop: {
@@ -84,10 +70,10 @@ describe('GameServiceImpl', () => {
         ratingCount: null,
         released: undefined,
         backgroundImage: undefined,
-        tags: ['rts'],
-        publishers: [{ id: 123, name: 'Wube' }],
-        developers: [{ id: 123, name: 'Wube' }],
+        publishers: [{ name: 'Wube' }],
+        developers: [{ name: 'Wube' }],
         platforms: [],
+        genres: [],
       },
       deals: [
         {
@@ -125,6 +111,9 @@ describe('GameServiceImpl', () => {
       released: undefined,
       backgroundImage: undefined,
       platforms: [],
+      developers: [],
+      publishers: [],
+      genres: [],
     });
 
     const result = await gameService.getGame('factorio');
@@ -141,6 +130,9 @@ describe('GameServiceImpl', () => {
         released: undefined,
         backgroundImage: undefined,
         platforms: [],
+        developers: [],
+        publishers: [],
+        genres: [],
       },
       deals: [],
     });
