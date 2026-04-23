@@ -13,7 +13,7 @@ describe('CachedRawgApi', () => {
   beforeEach(() => {
     delegateMock = {
       getGame: vi.fn(),
-      searchGames: vi.fn(),
+      searchAllGames: vi.fn(),
     };
 
     cacheMock = {
@@ -127,9 +127,9 @@ describe('RawgApiImplementation', () => {
         ),
       );
 
-      const result = rawgApi.searchGames('error-game');
+      const result = rawgApi.searchAllGames('error-game');
 
-      await expect(result).rejects.toThrow(
+      await expect(result.next()).rejects.toThrow(
         'Service Unavailable: Failed to fetch game from rawg.',
       );
     });

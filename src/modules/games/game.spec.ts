@@ -19,45 +19,42 @@ describe('GameServiceImpl', () => {
     gameService = new GameServiceImpl(rawgApi, itadApi, gameEventPublisher);
   });
 
-  describe('searchGames', () => {
+  describe('searchAllGames', () => {
     it('should emit event after search game', async () => {
-      await gameService.searchGames('factorio');
+      await gameService.searchAllGames('factorio');
 
       expect(gameEventPublisher.searchedTitles).toContain('factorio');
     });
 
     it('should return searched game base data', async () => {
-      rawgApi.searchGames.mockResolvedValue({
-        count: 0,
-        results: [
-          {
-            slug: 'factorio',
-            title: 'factorio',
-            rating: null,
-            backgroundImage: undefined,
-            platforms: [],
-          },
-        ],
-        next: null,
-        previous: null,
+      rawgApi.searchAllGames.mockImplementationOnce(async function* () {
+        yield {
+          count: 1,
+          next: null,
+          previous: null,
+          results: [
+            {
+              slug: 'factorio',
+              title: 'factorio',
+              rating: null,
+              backgroundImage: undefined,
+              platforms: [],
+            },
+          ],
+        };
       });
 
-      const result = await gameService.searchGames('factorio');
+      const result = await gameService.searchAllGames('factorio');
 
-      expect(result).toEqual({
-        count: 0,
-        results: [
-          {
-            slug: 'factorio',
-            title: 'factorio',
-            rating: null,
-            backgroundImage: undefined,
-            platforms: [],
-          },
-        ],
-        next: null,
-        previous: null,
-      });
+      expect(result).toEqual([
+        {
+          slug: 'factorio',
+          title: 'factorio',
+          rating: null,
+          backgroundImage: undefined,
+          platforms: [],
+        },
+      ]);
     });
   });
 

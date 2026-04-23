@@ -5,6 +5,7 @@ import {
   IRawgApi,
   RawgGameInfoRawResponse,
   RawgSearchGameInfoResponse,
+  RawgSearchResponse,
 } from './rawg-api.interface.js';
 import {
   rawgGameInfoResponseSchema,
@@ -13,7 +14,7 @@ import {
 import { UnavailableServiceError } from '@/utils/errors.js';
 
 export class RawgApiImplementation implements IRawgApi {
-  private limit = pLimit(2);
+  private readonly limit = pLimit(2);
   constructor(
     private readonly baseUrl: string,
     private readonly key: string,
@@ -45,11 +46,11 @@ export class RawgApiImplementation implements IRawgApi {
     return rawgGameInfoResponseSchema.parse(await response.json());
   }
 
-  async searchGames(title: string): Promise<RawgSearchGameInfoResponse> {
+  private async searchGames(url: string): Promise<RawgSearchGameInfoResponse> {
     const response = await this.limit(
       async () =>
         await fetchWithTimeout(
-          urlBuilder(`${this.baseUrl}/games`, { search: title }, this.key),
+          url,
           {
             method: 'GET',
             headers: {
@@ -66,5 +67,27 @@ export class RawgApiImplementation implements IRawgApi {
     }
 
     return searchRawgGameInfoResponseSchema.parse(await response.json());
+  }
+
+  async *searchAllGames(
+    title: string,
+  ): AsyncGenerator<RawgSearchGameInfoResponse> {
+    let nextUrl: string | null = urlBuilder(
+      `${this.baseUrl}/games`,
+      { search: title },
+      this.key,
+    );
+
+    while (nextUrl) {
+      const url: string = nextUrl;
+
+      const response = await this.limit(
+        async () => await this.searchGames(url),
+      );
+
+      yield response;
+
+      nextUrl = response.next;
+    }
   }
 }

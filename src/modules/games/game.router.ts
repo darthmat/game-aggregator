@@ -24,7 +24,7 @@ export class GamesRouter {
     server.get(
       '/game/:title/:country?',
       { schema: { params: gameSchema } },
-      async (req, res): Promise<GameDTO | null> => {
+      async (req): Promise<GameDTO | null> => {
         const { title, country } = req.params;
 
         const gameData = await this.gamesService
@@ -48,12 +48,12 @@ export class GamesRouter {
         const { title } = req.query;
 
         const gameData = await this.gamesService
-          .searchGames(title)
+          .searchAllGames(title)
           .catch(() => {
             throw new UnavailableServiceError('External API error');
           });
 
-        return rawSearchGameDataToDto(gameData.results);
+        return rawSearchGameDataToDto(gameData);
       },
     );
   }

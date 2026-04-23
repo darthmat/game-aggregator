@@ -2,6 +2,7 @@ import { IItadApi } from '@/libs/itad-api/itad-api.interface.js';
 import {
   IRawgApi,
   RawgSearchGameInfoResponse,
+  RawgSearchResponse,
 } from '@/libs/rawg-api/rawg-api.interface.js';
 import {
   IGameEventPublisher,
@@ -33,11 +34,21 @@ export class GameServiceImpl implements IGameService {
     };
   }
 
-  async searchGames(title: string): Promise<RawgSearchGameInfoResponse> {
-    const searchGamesInfo = await this.rawgApi.searchGames(title);
-
+  private async *searchGames(
+    title: string,
+  ): AsyncGenerator<RawgSearchGameInfoResponse> {
     this.gameEventPublisher.gameSearched(title);
 
-    return searchGamesInfo;
+    yield* this.rawgApi.searchAllGames(title);
+  }
+
+  async searchAllGames(title: string): Promise<RawgSearchResponse[]> {
+    const results: RawgSearchResponse[] = [];
+
+    for await (const batch of this.searchGames(title)) {
+      results.push(...batch.results);
+    }
+
+    return results;
   }
 }

@@ -7,7 +7,7 @@ import {
 
 export interface IRawgApi {
   getGame(title: string): Promise<RawgGameInfoRawResponse | null>;
-  searchGames(title: string): Promise<RawgSearchGameInfoResponse>;
+  searchAllGames(title: string): AsyncGenerator<RawgSearchGameInfoResponse>;
 }
 
 export type RawgGameInfoRawResponse = z.infer<

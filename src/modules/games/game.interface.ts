@@ -2,11 +2,12 @@ import { ItadGamePriceRawResponse } from '@/libs/itad-api/itad-api.interface.js'
 import {
   RawgGameInfoRawResponse,
   RawgSearchGameInfoResponse,
+  RawgSearchResponse,
 } from '@/libs/rawg-api/rawg-api.interface.js';
 
 export interface IGameService {
   getGame(title: string, country?: string): Promise<RichGameProfile | null>;
-  searchGames(title: string): Promise<RawgSearchGameInfoResponse>;
+  searchAllGames(title: string): Promise<RawgSearchResponse[]>;
 }
 
 export interface RichGameProfile {
