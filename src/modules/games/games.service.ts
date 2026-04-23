@@ -37,25 +37,14 @@ export class GameServiceImpl implements IGameService {
     };
   }
 
-  private async *searchGames(
-    title: string,
-  ): AsyncGenerator<RawgSearchGameInfoResponse> {
+  async searchAllGames(title: string): Promise<GamesSearchResult> {
     this.gameEventPublisher.gameSearched(title);
 
-    yield* this.rawgApi.searchAllGames(title);
-  }
-
-  async searchAllGames(title: string): Promise<GamesSearchResult> {
-    const games: RawgSearchResponse[] = [];
-
-    for await (const game of this.searchGames(title)) {
-      games.push(...game.results);
-
-      if (games.length >= this.gamesLimit) break;
-    }
+    const pages = await this.rawgApi.searchAllGames(title, this.gamesLimit);
+    const games = pages.flatMap((p) => p.results).slice(0, this.gamesLimit);
 
     return {
-      games: games.slice(0, this.gamesLimit),
+      games,
       total: games.length,
     };
   }

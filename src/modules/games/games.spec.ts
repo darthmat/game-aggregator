@@ -27,8 +27,8 @@ describe('GameServiceImpl', () => {
     });
 
     it('should return searched game base data', async () => {
-      rawgApi.searchAllGames.mockImplementationOnce(async function* () {
-        yield {
+      rawgApi.searchAllGames.mockImplementationOnce(async () => [
+        {
           count: 1,
           next: null,
           previous: null,
@@ -41,8 +41,8 @@ describe('GameServiceImpl', () => {
               platforms: [],
             },
           ],
-        };
-      });
+        },
+      ]);
 
       const result = await gameService.searchAllGames('factorio');
 

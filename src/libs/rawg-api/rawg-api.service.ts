@@ -69,9 +69,11 @@ export class RawgApiImplementation implements IRawgApi {
     return searchRawgGameInfoResponseSchema.parse(await response.json());
   }
 
-  async *searchAllGames(
+  async searchAllGames(
     title: string,
-  ): AsyncGenerator<RawgSearchGameInfoResponse> {
+    maxResults: number,
+  ): Promise<RawgSearchGameInfoResponse[]> {
+    const pages: RawgSearchGameInfoResponse[] = [];
     let nextUrl: string | null = urlBuilder(
       `${this.baseUrl}/games`,
       { search: title },
@@ -85,9 +87,14 @@ export class RawgApiImplementation implements IRawgApi {
         async () => await this.searchGames(url),
       );
 
-      yield response;
+      pages.push(response);
+
+      const total = pages.reduce((sum, p) => sum + p.results.length, 0);
+      if (total >= maxResults) break;
 
       nextUrl = response.next;
     }
+
+    return pages;
   }
 }

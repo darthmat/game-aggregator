@@ -127,9 +127,9 @@ describe('RawgApiImplementation', () => {
         ),
       );
 
-      const result = rawgApi.searchAllGames('error-game');
+      const result = rawgApi.searchAllGames('error-game', 10);
 
-      await expect(result.next()).rejects.toThrow(
+      await expect(result).rejects.toThrow(
         'Service Unavailable: Failed to fetch game from rawg.',
       );
     });
