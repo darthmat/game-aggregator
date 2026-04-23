@@ -15,8 +15,13 @@ import { createRedisCacheAdapter } from './utils/redis.js';
 import { SearchHistoryServiceImpl } from './modules/search-history/search-history.service.js';
 import { SearchHistoryRouter } from './modules/search-history/search-history.router.js';
 import { GameEventPublisher } from './modules/games/game.publisher.js';
+import { FastifyBaseLogger } from 'fastify';
 
-export async function container(config: Config, dbConfig: DbConfig) {
+export async function container(
+  config: Config,
+  dbConfig: DbConfig,
+  logger: FastifyBaseLogger,
+) {
   const db = createDatabase(dbConfig);
   const appEvents = new EventEmitter();
   const { client: redis, cacheAdapter } = await createRedisCacheAdapter(config);
@@ -40,6 +45,7 @@ export async function container(config: Config, dbConfig: DbConfig) {
   const searchHistoryService = new SearchHistoryServiceImpl(
     historyRepo,
     appEvents,
+    logger,
   );
 
   searchHistoryService.registerListeners();

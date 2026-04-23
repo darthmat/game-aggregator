@@ -4,6 +4,7 @@ import {
   ISearchHistoryRepository,
   ISearchHistoryService,
 } from './search-history.interface.js';
+import { FastifyBaseLogger } from 'fastify';
 
 export class SearchHistoryServiceImpl implements ISearchHistoryService {
   private readonly onSearchGame: (title: string) => void;
@@ -11,6 +12,7 @@ export class SearchHistoryServiceImpl implements ISearchHistoryService {
   constructor(
     private readonly searchHistoryRepository: ISearchHistoryRepository,
     private readonly eventEmitter: EventEmitter,
+    private readonly logger: FastifyBaseLogger,
   ) {
     this.onSearchGame = (title: string) => {
       void this.saveSearchHistory(title);
@@ -25,9 +27,9 @@ export class SearchHistoryServiceImpl implements ISearchHistoryService {
     await this.searchHistoryRepository
       .saveSearchHistory(title)
       .catch((error: unknown) => {
-        console.error(
-          `[SearchHistoryService] Nie udało się zapisać historii dla: ${title}`,
+        this.logger.error(
           error,
+          `[SearchHistoryService] Can't save history for: ${title}`,
         );
       });
   }

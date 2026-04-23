@@ -12,7 +12,7 @@ import {
 async function start() {
   const app = fastify({ logger: true });
   const { redis, db, healthzRouter, gameRouter, searchHistoryRouter } =
-    await container(config, dbConfig);
+    await container(config, dbConfig, app.log);
 
   try {
     app.setValidatorCompiler(validatorCompiler);
@@ -23,6 +23,7 @@ async function start() {
       max: 30,
       timeWindow: '1 minute',
     });
+
     healthzRouter.register(app);
     gameRouter.register(app);
     searchHistoryRouter.register(app);
