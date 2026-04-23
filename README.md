@@ -23,13 +23,13 @@ pnpm develop
 The API routing and validation are handled by Fastify and Zod schemas.
 Available endpoints include:
 
-`GET /healthz` - Application health check
+`GET /api/healthz` - Application health check
 
-`GET /games/search?title={query}` - Search for games based on a title
+`GET /api/games/search?title={query}` - Search for games based on a title
 
-`GET /game/:title/:country?` - Retrieve a specific game profile along with its pricing deals
+`GET /api/game/:title?country={query}` - Retrieve a specific game profile along with its pricing deals
 
-`GET /search-history/popular` - Retrieve the top 10 most popular search queries
+`GET /api/search-history/popular` - Retrieve the top 10 most popular search queries
 
 ### Swagger
 The API documentation and schema definitions, once running you can access them at:

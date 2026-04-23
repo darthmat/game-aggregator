@@ -32,9 +32,15 @@ async function start() {
     app.register(fastifyGracefulShutdown);
     app.register(fastifyRateLimit, { max: 30, timeWindow: '1 minute' });
 
-    healthzRouter.register(app);
-    gameRouter.register(app);
-    searchHistoryRouter.register(app);
+    app.register(
+      (instance, _, done) => {
+        healthzRouter.register(instance);
+        gameRouter.register(instance);
+        searchHistoryRouter.register(instance);
+        done();
+      },
+      { prefix: '/api' },
+    );
 
     await app.listen({ port: config.port, host: config.host });
 
