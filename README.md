@@ -31,6 +31,12 @@ Available endpoints include:
 
 `GET /search-history/popular` - Retrieve the top 10 most popular search queries
 
+### Swagger
+The API documentation and schema definitions, once running you can access them at:
+```
+http://localhost:4000/docs/
+```
+
 ### Tests
 Tests can be run with:
 
