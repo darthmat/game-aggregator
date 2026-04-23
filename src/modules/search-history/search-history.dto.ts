@@ -1,4 +1,4 @@
-export interface SearchHistoryDTO {
-  readonly query: string;
-  readonly searchCount: number;
-}
+import z from 'zod';
+import { searchHistoryItemSchema } from './search-history.schema.js';
+
+export type SearchHistoryDTO = z.infer<typeof searchHistoryItemSchema>;

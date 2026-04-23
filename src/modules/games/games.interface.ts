@@ -7,7 +7,7 @@ import {
 
 export interface IGameService {
   getGame(title: string, country?: string): Promise<RichGameProfile | null>;
-  searchAllGames(title: string): Promise<RawgSearchResponse[]>;
+  searchAllGames(title: string): Promise<GamesSearchResult>;
 }
 
 export interface RichGameProfile {
@@ -17,4 +17,9 @@ export interface RichGameProfile {
 
 export interface IGameEventPublisher {
   gameSearched(title: string): void;
+}
+
+export interface GamesSearchResult {
+  games: RawgSearchResponse[];
+  total: number;
 }

@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { IGameEventPublisher } from './game.interface.js';
+import { IGameEventPublisher } from './games.interface.js';
 
 export class GameEventPublisher implements IGameEventPublisher {
   constructor(private readonly eventEmitter: EventEmitter) {}

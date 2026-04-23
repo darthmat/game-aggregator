@@ -3,13 +3,14 @@ import {
   IRawgApi,
   RawgGameInfoRawResponse,
   RawgSearchGameInfoResponse,
+  RawgSearchResponse,
 } from './rawg-api.interface.js';
 
 export type RawgApiCacheTypes = Record<
   `rawg-games-api:${string}`,
   RawgGameInfoRawResponse | null
 > &
-  Record<`rawg-games-api-search:${string}`, RawgSearchGameInfoResponse>;
+  Record<`rawg-games-api-search:${string}`, RawgSearchGameInfoResponse[]>;
 
 export class CachedRawgApi implements IRawgApi {
   constructor(
@@ -27,13 +28,29 @@ export class CachedRawgApi implements IRawgApi {
     );
   }
 
-  async searchGames(title: string): Promise<RawgSearchGameInfoResponse> {
+  async *searchAllGames(
+    title: string,
+  ): AsyncGenerator<RawgSearchGameInfoResponse> {
     const cacheTitle = title.trim().toLowerCase();
 
-    return await this.cache.cached(
+    const pages = await this.cache.cached(
       `rawg-games-api-search:${cacheTitle}`,
-      () => this.delegate.searchGames(title),
+      () => this.fetchAllPages(title),
       '1w',
     );
+
+    yield* pages;
+  }
+
+  private async fetchAllPages(
+    title: string,
+  ): Promise<RawgSearchGameInfoResponse[]> {
+    const pages: RawgSearchGameInfoResponse[] = [];
+
+    for await (const page of this.delegate.searchAllGames(title)) {
+      pages.push(page);
+    }
+
+    return pages;
   }
 }

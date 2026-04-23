@@ -5,10 +5,11 @@ import {
   RawgSearchResponse,
 } from '@/libs/rawg-api/rawg-api.interface.js';
 import {
+  GamesSearchResult,
   IGameEventPublisher,
   IGameService,
   RichGameProfile,
-} from './game.interface.js';
+} from './games.interface.js';
 
 export class GameServiceImpl implements IGameService {
   private readonly gamesLimit = 100;
@@ -44,15 +45,18 @@ export class GameServiceImpl implements IGameService {
     yield* this.rawgApi.searchAllGames(title);
   }
 
-  async searchAllGames(title: string): Promise<RawgSearchResponse[]> {
-    const results: RawgSearchResponse[] = [];
+  async searchAllGames(title: string): Promise<GamesSearchResult> {
+    const games: RawgSearchResponse[] = [];
 
-    for await (const batch of this.searchGames(title)) {
-      results.push(...batch.results);
+    for await (const game of this.searchGames(title)) {
+      games.push(...game.results);
 
-      if (results.length >= this.gamesLimit) break;
+      if (games.length >= this.gamesLimit) break;
     }
 
-    return results.slice(0, this.gamesLimit);
+    return {
+      games: games.slice(0, this.gamesLimit),
+      total: games.length,
+    };
   }
 }

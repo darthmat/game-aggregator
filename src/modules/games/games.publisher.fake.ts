@@ -1,4 +1,4 @@
-import { IGameEventPublisher } from './game.interface.js';
+import { IGameEventPublisher } from './games.interface.js';
 
 export class FakeGameEventPublisher implements IGameEventPublisher {
   searchedTitles: string[] = [];

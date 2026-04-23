@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 
 export class HealthzRouter {
   register(fastify: FastifyInstance) {
-    fastify.get('/healthz', async (req, res) => {
+    fastify.get('/healthz', async (_req, res) => {
       const healthcheck = {
         uptime: process.uptime(),
         message: 'OK',

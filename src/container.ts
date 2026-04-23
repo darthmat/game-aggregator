@@ -1,5 +1,6 @@
 import { Cache } from '@jeengbe/cache';
 import EventEmitter from 'events';
+import { FastifyBaseLogger } from 'fastify';
 import { Config } from './config.js';
 import { createDatabase } from './database/db.js';
 import { DbConfig } from './dbConfig.js';
@@ -7,15 +8,14 @@ import { CachedItadApi } from './libs/itad-api/itad-api.cache.js';
 import { ItadApiImplementation } from './libs/itad-api/itad-api.service.js';
 import { CachedRawgApi } from './libs/rawg-api/rawg-api.cache.js';
 import { RawgApiImplementation } from './libs/rawg-api/rawg-api.service.js';
-import { GamesRouter } from './modules/games/game.router.js';
-import { GameServiceImpl } from './modules/games/game.service.js';
+import { GameEventPublisher } from './modules/games/games.publisher.js';
+import { GamesRouter } from './modules/games/games.router.js';
+import { GameServiceImpl } from './modules/games/games.service.js';
 import { HealthzRouter } from './modules/healthz/healthz.router.js';
 import { SearchHistoryRepositoryImplementation } from './modules/search-history/search-history.repository.js';
-import { createRedisCacheAdapter } from './utils/redis.js';
-import { SearchHistoryServiceImpl } from './modules/search-history/search-history.service.js';
 import { SearchHistoryRouter } from './modules/search-history/search-history.router.js';
-import { GameEventPublisher } from './modules/games/game.publisher.js';
-import { FastifyBaseLogger } from 'fastify';
+import { SearchHistoryServiceImpl } from './modules/search-history/search-history.service.js';
+import { createRedisCacheAdapter } from './utils/redis.js';
 
 export async function container(
   config: Config,

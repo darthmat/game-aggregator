@@ -1,45 +1,50 @@
+import fastifyRateLimit from '@fastify/rate-limit';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import { fastify } from 'fastify';
 import fastifyGracefulShutdown from 'fastify-graceful-shutdown';
+import {
+  jsonSchemaTransform,
+  serializerCompiler,
+  validatorCompiler,
+} from 'fastify-type-provider-zod';
 import { config } from './config.js';
 import { container } from './container.js';
 import { dbConfig } from './dbConfig.js';
-import fastifyRateLimit from '@fastify/rate-limit';
-import {
-  validatorCompiler,
-  serializerCompiler,
-} from 'fastify-type-provider-zod';
 import { errorHandler } from './utils/errors.js';
 
 async function start() {
   const app = fastify({ logger: true });
-  const { redis, db, healthzRouter, gameRouter, searchHistoryRouter } =
-    await container(config, dbConfig, app.log);
 
   try {
+    const { redis, db, healthzRouter, gameRouter, searchHistoryRouter } =
+      await container(config, dbConfig, app.log);
+
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);
     app.setErrorHandler(errorHandler);
 
-    app.register(fastifyGracefulShutdown);
-    app.register(fastifyRateLimit, {
-      max: 30,
-      timeWindow: '1 minute',
+    app.register(fastifySwagger, {
+      openapi: { info: { title: 'Games API', version: '1.0.0' } },
+      transform: jsonSchemaTransform,
     });
+    app.register(fastifySwaggerUi, { routePrefix: '/docs' });
+    app.register(fastifyGracefulShutdown);
+    app.register(fastifyRateLimit, { max: 30, timeWindow: '1 minute' });
 
     healthzRouter.register(app);
     gameRouter.register(app);
     searchHistoryRouter.register(app);
 
-    app.after(() => {
-      app.gracefulShutdown(async (signal) => {
-        await Promise.all([db.destroy(), redis.quit()]);
-        app.log.info('Received signal to shutdown: %s', signal);
-      });
-    });
+    await app.listen({ port: config.port, host: config.host });
 
-    await app.listen({
-      port: config.port,
-      host: config.host,
+    app.gracefulShutdown(async (signal) => {
+      app.log.info('Received signal to shutdown: %s', signal);
+      try {
+        await Promise.all([db.destroy(), redis.quit()]);
+      } catch (err) {
+        app.log.error(err, 'Error during shutdown');
+      }
     });
   } catch (err) {
     app.log.error(err);

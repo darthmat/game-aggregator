@@ -1,9 +1,9 @@
 import { FakeItadApi } from '@/libs/itad-api/itad-api.fake.js';
 import { FakeRawgApi } from '@/libs/rawg-api/rawg-api.fake.js';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { IGameService } from './game.interface.js';
-import { FakeGameEventPublisher } from './game.publisher.fake.js';
-import { GameServiceImpl } from './game.service.js';
+import { IGameService } from './games.interface.js';
+import { FakeGameEventPublisher } from './games.publisher.fake.js';
+import { GameServiceImpl } from './games.service.js';
 
 describe('GameServiceImpl', () => {
   let rawgApi: FakeRawgApi;
@@ -46,15 +46,18 @@ describe('GameServiceImpl', () => {
 
       const result = await gameService.searchAllGames('factorio');
 
-      expect(result).toEqual([
-        {
-          slug: 'factorio',
-          title: 'factorio',
-          rating: null,
-          backgroundImage: undefined,
-          platforms: [],
-        },
-      ]);
+      expect(result).toEqual({
+        games: [
+          {
+            backgroundImage: undefined,
+            platforms: [],
+            rating: null,
+            slug: 'factorio',
+            title: 'factorio',
+          },
+        ],
+        total: 1,
+      });
     });
   });
 
