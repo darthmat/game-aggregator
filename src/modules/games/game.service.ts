@@ -53,6 +53,6 @@ export class GameServiceImpl implements IGameService {
       if (results.length >= this.gamesLimit) break;
     }
 
-    return results;
+    return results.slice(0, this.gamesLimit);
   }
 }

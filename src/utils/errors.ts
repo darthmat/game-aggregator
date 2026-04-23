@@ -62,6 +62,7 @@ export function errorHandler(
     res.status(503).send({
       message: err.message,
     });
+    return;
   }
 
   res.status(500).send({ message: 'An unexpected error occurred.' });

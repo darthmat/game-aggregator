@@ -11,7 +11,6 @@ export class HealthzRouter {
       try {
         res.send(healthcheck);
       } catch (error: unknown) {
-        new Error('something went wrong');
         res.status(503).send();
       }
     });
