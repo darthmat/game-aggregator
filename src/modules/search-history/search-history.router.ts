@@ -9,10 +9,17 @@ export class SearchHistoryRouter {
   register(fastify: FastifyInstance) {
     fastify.get(
       '/search-history/popular',
-      async (_req): Promise<SearchHistoryDTO[]> => {
-        return await this.searchHistoryService.getSearchHistory().catch(() => {
-          throw new UnavailableServiceError('Database error');
-        });
+      async (req): Promise<SearchHistoryDTO[]> => {
+        return await this.searchHistoryService
+          .getSearchHistory()
+          .catch((error: unknown) => {
+            req.log.error(
+              error,
+              '[SearchHistory] Failed to fetch popular searches from database',
+            );
+
+            throw new UnavailableServiceError('Database error');
+          });
       },
     );
   }

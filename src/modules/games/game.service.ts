@@ -11,6 +11,8 @@ import {
 } from './game.interface.js';
 
 export class GameServiceImpl implements IGameService {
+  private readonly gamesLimit = 100;
+
   constructor(
     private readonly rawgApi: IRawgApi,
     private readonly itadApi: IItadApi,
@@ -47,6 +49,8 @@ export class GameServiceImpl implements IGameService {
 
     for await (const batch of this.searchGames(title)) {
       results.push(...batch.results);
+
+      if (results.length >= this.gamesLimit) break;
     }
 
     return results;

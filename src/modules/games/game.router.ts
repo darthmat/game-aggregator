@@ -27,11 +27,7 @@ export class GamesRouter {
       async (req): Promise<GameDTO | null> => {
         const { title, country } = req.params;
 
-        const gameData = await this.gamesService
-          .getGame(title, country)
-          .catch(() => {
-            throw new UnavailableServiceError('External API error');
-          });
+        const gameData = await this.gamesService.getGame(title, country);
 
         if (!gameData) return null;
 
@@ -47,11 +43,7 @@ export class GamesRouter {
       async (req): Promise<SearchGameDTO[]> => {
         const { title } = req.query;
 
-        const gameData = await this.gamesService
-          .searchAllGames(title)
-          .catch(() => {
-            throw new UnavailableServiceError('External API error');
-          });
+        const gameData = await this.gamesService.searchAllGames(title);
 
         return rawSearchGameDataToDto(gameData);
       },
