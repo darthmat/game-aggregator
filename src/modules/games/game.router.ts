@@ -4,6 +4,7 @@ import { GameDTO, rawGameDataToDto } from './game.dto.js';
 import { IGameService } from './game.interface.js';
 import { rawSearchGameDataToDto, SearchGameDTO } from './searchGame.dto.js';
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
+import { UnavailableServiceError } from '@/utils/errors.js';
 
 const gameSchema = z.object({
   title: z.string().min(3),
@@ -29,11 +30,7 @@ export class GamesRouter {
         const gameData = await this.gamesService
           .getGame(title, country)
           .catch(() => {
-            res.status(503).send({
-              error: 'Service Unavailable',
-              message: 'External API error',
-            });
-            return null;
+            throw new UnavailableServiceError('External API error');
           });
 
         if (!gameData) return null;
@@ -47,20 +44,14 @@ export class GamesRouter {
       {
         schema: { querystring: gameSearchSchema },
       },
-      async (req, res): Promise<SearchGameDTO[]> => {
+      async (req): Promise<SearchGameDTO[]> => {
         const { title } = req.query;
 
         const gameData = await this.gamesService
           .searchGames(title)
           .catch(() => {
-            res.status(503).send({
-              error: 'Service Unavailable',
-              message: 'External API error',
-            });
-            return null;
+            throw new UnavailableServiceError('External API error');
           });
-
-        if (!gameData) return [];
 
         return rawSearchGameDataToDto(gameData.results);
       },

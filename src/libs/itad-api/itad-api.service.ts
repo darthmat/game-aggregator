@@ -8,6 +8,7 @@ import {
   ItadLookupResponse,
 } from './itad-api.interface.js';
 import { v3ResponseSchema } from './itad-api.schema.js';
+import { UnavailableServiceError } from '@/utils/errors.js';
 
 export class ItadApiImplementation implements IItadApi {
   private limit = pLimit(2);
@@ -34,13 +35,7 @@ export class ItadApiImplementation implements IItadApi {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch game from itad.', {
-        cause: {
-          status: response.status,
-          statusText: response.statusText,
-          body: await response.text(),
-        },
-      });
+      throw new UnavailableServiceError('Failed to fetch game from itad.');
     }
 
     return await (response.json() as Promise<ItadLookupResponse>);
@@ -67,13 +62,7 @@ export class ItadApiImplementation implements IItadApi {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch game from itad.', {
-        cause: {
-          status: response.status,
-          statusText: response.statusText,
-          body: await response.text(),
-        },
-      });
+      throw new UnavailableServiceError('Failed to fetch prices from itad.');
     }
 
     const parsedData = v3ResponseSchema.parse(await response.json());
@@ -91,11 +80,13 @@ export class ItadApiImplementation implements IItadApi {
     if (!gameLookup.found) return null;
 
     const gameDeals = await this.getPrices(gameLookup.game.id, country).catch(
-      () => null,
+      () => {
+        throw new UnavailableServiceError('Failed to fetch game deals.');
+      },
     );
 
     return {
-      deals: gameDeals ?? [],
+      deals: gameDeals,
     };
   }
 }

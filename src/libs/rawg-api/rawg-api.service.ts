@@ -10,6 +10,7 @@ import {
   rawgGameInfoResponseSchema,
   searchRawgGameInfoResponseSchema,
 } from './rawg-api.schema.js';
+import { UnavailableServiceError } from '@/utils/errors.js';
 
 export class RawgApiImplementation implements IRawgApi {
   private limit = pLimit(2);
@@ -38,13 +39,7 @@ export class RawgApiImplementation implements IRawgApi {
     if (response.status === 404) return null;
 
     if (!response.ok) {
-      throw new Error('Failed to fetch game from rawg.', {
-        cause: {
-          status: response.status,
-          statusText: response.statusText,
-          body: await response.text(),
-        },
-      });
+      throw new UnavailableServiceError('Failed to fetch game from rawg.');
     }
 
     return rawgGameInfoResponseSchema.parse(await response.json());
@@ -67,13 +62,7 @@ export class RawgApiImplementation implements IRawgApi {
     );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch games from rawg.', {
-        cause: {
-          status: response.status,
-          statusText: response.statusText,
-          body: await response.text(),
-        },
-      });
+      throw new UnavailableServiceError('Failed to fetch game from rawg.');
     }
 
     return searchRawgGameInfoResponseSchema.parse(await response.json());

@@ -8,6 +8,7 @@ import {
   validatorCompiler,
   serializerCompiler,
 } from 'fastify-type-provider-zod';
+import { errorHandler } from './utils/errors.js';
 
 async function start() {
   const app = fastify({ logger: true });
@@ -17,6 +18,7 @@ async function start() {
   try {
     app.setValidatorCompiler(validatorCompiler);
     app.setSerializerCompiler(serializerCompiler);
+    app.setErrorHandler(errorHandler);
 
     app.register(fastifyGracefulShutdown);
     app.register(fastifyRateLimit, {

@@ -45,7 +45,7 @@ export async function container(
   const searchHistoryService = new SearchHistoryServiceImpl(
     historyRepo,
     appEvents,
-    logger,
+    logger.child({ service: 'searchHistoryService' }),
   );
 
   searchHistoryService.registerListeners();

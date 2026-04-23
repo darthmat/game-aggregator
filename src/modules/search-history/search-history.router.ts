@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { ISearchHistoryService } from './search-history.interface.js';
 import { SearchHistoryDTO } from './search-history.dto.js';
+import { UnavailableServiceError } from '@/utils/errors.js';
 
 export class SearchHistoryRouter {
   constructor(private readonly searchHistoryService: ISearchHistoryService) {}
@@ -8,13 +9,9 @@ export class SearchHistoryRouter {
   register(fastify: FastifyInstance) {
     fastify.get(
       '/search-history/popular',
-      async (_req, res): Promise<SearchHistoryDTO[]> => {
+      async (_req): Promise<SearchHistoryDTO[]> => {
         return await this.searchHistoryService.getSearchHistory().catch(() => {
-          res.status(503).send({
-            error: 'Service Unavailable',
-            message: 'Database error',
-          });
-          return [];
+          throw new UnavailableServiceError('Database error');
         });
       },
     );

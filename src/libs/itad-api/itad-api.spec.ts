@@ -40,14 +40,18 @@ describe('ItadgApiImplementation', () => {
 
     const result = itadApi.getGameDeals('null-game');
 
-    await expect(result).rejects.toThrow('Failed to fetch game from itad.');
+    await expect(result).rejects.toThrow(
+      'Service Unavailable: Failed to fetch game from itad.',
+    );
   });
 
-  it('should return empty deals if getPrices throws', async () => {
+  it('should return empty deals if getPrices return empty', async () => {
     mockFetch.mockResolvedValueOnce(
       mockResponse({ found: true, game: { id: 'abc123' } }),
     );
-    mockFetch.mockResolvedValueOnce(mockResponse({ ok: false }, 500));
+    mockFetch.mockResolvedValueOnce(
+      mockResponse([{ id: 'abc123', deals: [] }]),
+    );
 
     const result = await itadApi.getGameDeals('factorio');
 
