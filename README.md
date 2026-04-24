@@ -1,5 +1,5 @@
 # game-aggregator
-The application aggregates video game data from RAWG (the largest video game database) and current price deals from IsThereAnyDeal (ITAD). It allows you to search for games, retrieve rich game profiles with deals, and tracks popular search queries.
+The application aggregates video game data from [RAWG](https://rawg.io) (the largest video game database) and current price deals from [IsThereAnyDeal (ITAD)](https://isthereanydeal.com). It allows you to search for games, retrieve rich game profiles with deals, and tracks popular search queries.
 
 ### Prerequisites
 The application requires Docker and Docker Compose to run, targeting Node 24.
