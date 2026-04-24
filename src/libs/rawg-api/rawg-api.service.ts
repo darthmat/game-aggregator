@@ -14,7 +14,7 @@ import {
 import { UnavailableServiceError } from '@/utils/errors.js';
 
 export class RawgApiImplementation implements IRawgApi {
-  private readonly limit = pLimit(2);
+  private readonly limit = pLimit(10);
   constructor(
     private readonly baseUrl: string,
     private readonly key: string,
@@ -76,7 +76,8 @@ export class RawgApiImplementation implements IRawgApi {
     const pages: RawgSearchGameInfoResponse[] = [];
     let nextUrl: string | null = urlBuilder(
       `${this.baseUrl}/games`,
-      { search: title },
+      // eslint-disable-next-line @typescript-eslint/naming-convention -- api required snake case as params
+      { search: title, page_size: maxResults.toString() },
       this.key,
     );
 
