@@ -1,9 +1,5 @@
 import { IItadApi } from '@/libs/itad-api/itad-api.interface.js';
-import {
-  IRawgApi,
-  RawgSearchGameInfoResponse,
-  RawgSearchResponse,
-} from '@/libs/rawg-api/rawg-api.interface.js';
+import { IRawgApi } from '@/libs/rawg-api/rawg-api.interface.js';
 import {
   GamesSearchResult,
   IGameEventPublisher,

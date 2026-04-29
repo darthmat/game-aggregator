@@ -3,7 +3,6 @@ import {
   IRawgApi,
   RawgGameInfoRawResponse,
   RawgSearchGameInfoResponse,
-  RawgSearchResponse,
 } from './rawg-api.interface.js';
 
 export type RawgApiCacheTypes = Record<

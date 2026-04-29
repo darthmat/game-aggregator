@@ -1,7 +1,6 @@
 import { ItadGamePriceRawResponse } from '@/libs/itad-api/itad-api.interface.js';
 import {
   RawgGameInfoRawResponse,
-  RawgSearchGameInfoResponse,
   RawgSearchResponse,
 } from '@/libs/rawg-api/rawg-api.interface.js';
 

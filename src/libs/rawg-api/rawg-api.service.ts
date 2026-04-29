@@ -5,7 +5,6 @@ import {
   IRawgApi,
   RawgGameInfoRawResponse,
   RawgSearchGameInfoResponse,
-  RawgSearchResponse,
 } from './rawg-api.interface.js';
 import {
   rawgGameInfoResponseSchema,

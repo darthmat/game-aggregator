@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { ZodTypeProvider } from 'fastify-type-provider-zod';
-import z from 'zod';
-import { GameDTO, SearchGameDTO, SearchGameResponse } from './games.dto.js';
+import { GameDTO, SearchGameResponse } from './games.dto.js';
 import { IGameService } from './games.interface.js';
 import {
   gameDTOSchema,
