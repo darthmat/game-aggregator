@@ -9,9 +9,8 @@ export class ValidationError extends Error {
 
 export class InternalError extends Error {
   constructor(cause?: unknown) {
-    super('An internal error occurred.');
+    super('An internal error occurred.', { cause });
     this.name = 'InternalError';
-    this.cause = cause;
   }
 }
 
