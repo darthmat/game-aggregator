@@ -19,14 +19,9 @@ import { Database } from './types.js';
 import { GameAggregatorMigrationProvider } from './migrations/index.js';
 
 /**
- * Spins up a MySQL container and runs the provided callback with a fresh database
- * in `beforeEach` and destroys the connection in `afterEach`.
+ * Spins up a MySQL container
  */
-export function withDatabase(
-  cb: (db: Database, invalidDb: Database) => void | Promise<void>,
-): void {
-  vitest.setConfig({ testTimeout: 60000, hookTimeout: 60000 });
-
+export function withDatabase() {
   let postgresContainer: StartedPostgreSqlContainer;
   let db: Database;
   let invalidDb: Database;
@@ -34,9 +29,7 @@ export function withDatabase(
   beforeAll(async () => {
     postgresContainer = await new PostgreSqlContainer('postgres:latest')
       .withDatabase('name_should_not_matter')
-      .withTmpFs({
-        '/var/lib/postgresql/data': 'rw',
-      })
+      .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
       .start();
 
     db = createDatabase({
@@ -54,31 +47,42 @@ export function withDatabase(
       password: 'empty',
       database: postgresContainer.getDatabase(),
     });
+
+    await runMigrations(db);
   });
 
   afterAll(async () => {
     await db.destroy();
+    await invalidDb.destroy();
     await postgresContainer.stop();
   });
 
-  beforeEach(async () => {
-    const migrator = new Migrator({
-      db,
-      provider: new GameAggregatorMigrationProvider(),
-    });
-
-    const result = await migrator.migrateToLatest();
-    if (result.error) {
-      assert(result.error instanceof Error);
-      throw result.error;
-    }
-
-    await cb(db, invalidDb);
-  });
-
   afterEach(async () => {
-    await sql`DROP SCHEMA public CASCADE; CREATE SCHEMA public;`.execute(db);
+    await sql`DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public;`.execute(
+      db,
+    );
+
+    await runMigrations(db);
   });
+
+  return {
+    getDb: () => db,
+    getInvalidDb: () => invalidDb,
+  };
+}
+
+async function runMigrations(db: Database): Promise<void> {
+  const migrator = new Migrator({
+    db,
+    provider: new GameAggregatorMigrationProvider(),
+  });
+
+  const result = await migrator.migrateToLatest();
+
+  if (result.error) {
+    assert(result.error instanceof Error);
+    throw result.error;
+  }
 }
 
 export function itWrapsErrors(
