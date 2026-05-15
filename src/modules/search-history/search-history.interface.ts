@@ -7,4 +7,9 @@ export interface ISearchHistoryRepository {
 
 export interface ISearchHistoryService {
   getSearchHistory(): Promise<SearchHistoryDTO[]>;
+  saveSearchHistory(title: string): Promise<void>;
+}
+
+export interface ISearchHistoryConsumer {
+  registerListeners(): void;
 }

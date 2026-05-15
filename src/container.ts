@@ -1,4 +1,4 @@
-import { Cache } from '@jeengbe/cache';
+import { Cache, RedisCacheAdapter } from '@jeengbe/cache';
 import EventEmitter from 'events';
 import { FastifyBaseLogger } from 'fastify';
 import { Config } from './config.js';
@@ -12,6 +12,7 @@ import { GameEventPublisher } from './modules/games/games.publisher.js';
 import { GamesRouter } from './modules/games/games.router.js';
 import { GameServiceImpl } from './modules/games/games.service.js';
 import { HealthzRouter } from './modules/healthz/healthz.router.js';
+import { SearchHistoryConsumer } from './modules/search-history/search-history.consumer.js';
 import { SearchHistoryRepositoryImplementation } from './modules/search-history/search-history.repository.js';
 import { SearchHistoryRouter } from './modules/search-history/search-history.router.js';
 import { SearchHistoryServiceImpl } from './modules/search-history/search-history.service.js';
@@ -19,12 +20,14 @@ import { createRedisCacheAdapter } from './utils/redis.js';
 
 export async function container(
   config: Config,
-  dbConfig: DbConfig,
   logger: FastifyBaseLogger,
+  dbConfig: DbConfig,
 ) {
   const db = createDatabase(dbConfig);
+  const redisClient = await createRedisCacheAdapter(config);
   const appEvents = new EventEmitter();
-  const { client: redis, cacheAdapter } = await createRedisCacheAdapter(config);
+
+  const cacheAdapter = new RedisCacheAdapter(redisClient.client);
 
   const rawgApiService = new CachedRawgApi(
     new RawgApiImplementation(config.api.rawg.base, config.api.rawg.key),
@@ -34,25 +37,36 @@ export async function container(
     new ItadApiImplementation(config.api.itad.base, config.api.itad.key),
     new Cache(cacheAdapter),
   );
-  const gameEventPublisher = new GameEventPublisher(appEvents);
 
   const historyRepo = new SearchHistoryRepositoryImplementation(db);
+
+  const gameEventPublisher = new GameEventPublisher(appEvents);
   const gameService = new GameServiceImpl(
     rawgApiService,
     itadApiService,
     gameEventPublisher,
   );
+
   const searchHistoryService = new SearchHistoryServiceImpl(
     historyRepo,
-    appEvents,
-    logger.child({ service: 'searchHistoryService' }),
+    logger,
   );
 
-  searchHistoryService.registerListeners();
+  const searchHistoryConsumer = new SearchHistoryConsumer(
+    searchHistoryService,
+    appEvents,
+  );
+  searchHistoryConsumer.registerListeners();
 
   const healthzRouter = new HealthzRouter();
   const gameRouter = new GamesRouter(gameService);
   const searchHistoryRouter = new SearchHistoryRouter(searchHistoryService);
 
-  return { redis, db, healthzRouter, gameRouter, searchHistoryRouter };
+  return {
+    db,
+    redisClient,
+    healthzRouter,
+    gameRouter,
+    searchHistoryRouter,
+  };
 }
